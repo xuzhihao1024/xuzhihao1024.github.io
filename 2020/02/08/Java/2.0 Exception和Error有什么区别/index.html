@@ -6,15 +6,23 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Category: 前端 | xuzhihao的博客</title>
+  <title>2.0 Exception和Error有什么区别? | xuzhihao的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="xuzhihao的博客">
-<meta property="og:url" content="http://yoursite.com/categories/%E5%89%8D%E7%AB%AF/index.html">
+  <meta name="description" content="Java 语言在设计之初就提供了相对完善的异常处理机制，这也是 Java 得以大行其道的原因之一，因为这种机制大大降低了编写和维护可靠程序的门槛。 如今，异常处理机制已经成为现代编程语言的标配。 问题一：请对比Exception和Error？相同点Exception 和 Error 都是继承了 Throwable 类，在 Java 中只有 Throwable 类型的实例才可以被抛出（throw）或">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2.0 Exception和Error有什么区别?">
+<meta property="og:url" content="http://yoursite.com/2020/02/08/Java/2.0%20Exception%E5%92%8CError%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB/index.html">
 <meta property="og:site_name" content="xuzhihao的博客">
+<meta property="og:description" content="Java 语言在设计之初就提供了相对完善的异常处理机制，这也是 Java 得以大行其道的原因之一，因为这种机制大大降低了编写和维护可靠程序的门槛。 如今，异常处理机制已经成为现代编程语言的标配。 问题一：请对比Exception和Error？相同点Exception 和 Error 都是继承了 Throwable 类，在 Java 中只有 Throwable 类型的实例才可以被抛出（throw）或">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0082zybpgy1gbot95gybwj30mb0d6mx3.jpg">
+<meta property="article:published_time" content="2020-02-07T16:06:16.000Z">
+<meta property="article:modified_time" content="2020-02-08T05:42:16.605Z">
 <meta property="article:author" content="Jason Xu">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="异常">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/0082zybpgy1gbot95gybwj30mb0d6mx3.jpg">
   
     <link rel="alternative" href="/atom.xml" title="xuzhihao的博客" type="application/atom+xml">
   
@@ -152,76 +160,233 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Java/2.0 Exception和Error有什么区别" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/02/05/hello-world/" class="archive-article-date">
-  	<time datetime="2020-02-05T12:27:51.529Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-05</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/02/05/hello-world/">hello hexo</a>
+    <h1 class="article-title" itemprop="name">
+      2.0 Exception和Error有什么区别?
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2020/02/08/Java/2.0%20Exception%E5%92%8CError%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB/" class="archive-article-date">
+  	<time datetime="2020-02-07T16:06:16.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Java 语言在设计之初就提供了相对完善的异常处理机制，这也是 Java 得以大行其道的原因之一，因为这种机制大大降低了编写和维护可靠程序的门槛。</p>
+<p>如今，异常处理机制已经成为现代编程语言的标配。</p>
+<h1 id="问题一：请对比Exception和Error？"><a href="#问题一：请对比Exception和Error？" class="headerlink" title="问题一：请对比Exception和Error？"></a>问题一：请对比Exception和Error？</h1><h2 id="相同点"><a href="#相同点" class="headerlink" title="相同点"></a>相同点</h2><p>Exception 和 Error 都是继承了 Throwable 类，在 Java 中<strong>只有 Throwable 类型的实例</strong>才可以被抛出（throw）或者捕获（catch），它是异常处理机制的基本组成类型。</p>
+<h2 id="不同点"><a href="#不同点" class="headerlink" title="不同点"></a>不同点</h2><p>Exception 和 Error 体现了 Java 平台设计者对不同异常情况的分类。</p>
+<ul>
+<li>Exception 是程序正常运行中，可以预料的意外情况，可能并且应该被捕获，进行相应处理。</li>
+</ul>
+<blockquote>
+<p> Exception 又分为<strong>可检查（checked）</strong>异常和<strong>不检查（unchecked）</strong>异常，</p>
+<ul>
+<li>可检查异常：在源代码里必须显式地进行捕获处理，<u>这是编译期检查的一部分</u>。注意前面介绍的不可查的 Error，是 Throwable 不是 Exception。</li>
+<li>不检查异常：就是所谓的运行时异常，类似 NullPointerException、ArrayIndexOutOfBoundsException 之类，<u>通常是可以编码避免的逻辑错误，具体根据需要来判断是否需要捕获，并不会在编译期强制要求。</u></li>
+</ul>
+</blockquote>
+<ul>
+<li>Error 是指在正常情况下，不大可能出现的情况，绝大部分的 Error 都会导致程序（比如 JVM 自身）处于非正常的、不可恢复状态。既然是非正常情况，所以不便于也不需要捕获，常见的比如 OutOfMemoryError 之类，都是 Error 的子类。</li>
+</ul>
+<h1 id="在日常编程中，如何处理好异常？是比较考验功底的—–掌握两个方面"><a href="#在日常编程中，如何处理好异常？是比较考验功底的—–掌握两个方面" class="headerlink" title="在日常编程中，如何处理好异常？是比较考验功底的—–掌握两个方面"></a>在日常编程中，如何处理好异常？是比较考验功底的—–掌握两个方面</h1><h2 id="一、理解Throwable、Exception、Error的设计和分类"><a href="#一、理解Throwable、Exception、Error的设计和分类" class="headerlink" title="一、理解Throwable、Exception、Error的设计和分类"></a>一、理解Throwable、Exception、Error的设计和分类</h2><p>比如，掌握那些应用最为广泛的子类，以及如何自定义异常等。</p>
+<p>很多面试官会进一步追问一些细节，比如，你了解哪些 Error、Exception 或者 RuntimeException？</p>
+<p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gbot95gybwj30mb0d6mx3.jpg" alt=""></p>
+<blockquote>
+<p>其中有些子类型，最好重点理解一下，比如 NoClassDefFoundError 和 ClassNotFoundException 有什么区别，这也是个经典的入门题目。</p>
+</blockquote>
+<h2 id="二、理解-Java-语言中操作-Throwable-的元素和实践"><a href="#二、理解-Java-语言中操作-Throwable-的元素和实践" class="headerlink" title="二、理解 Java 语言中操作 Throwable 的元素和实践"></a>二、理解 Java 语言中操作 Throwable 的元素和实践</h2><p>掌握最基本的语法是必须的，如 try-catch-finally 块，throw、throws 关键字等。与此同时，也要懂得如何处理典型场景。</p>
+<p>异常处理代码比较繁琐，比如我们需要写很多千篇一律的捕获代码，或者在 finally 里面做一些资源回收工作。随着 Java 语言的发展，引入了一些更加便利的特性，比如 <strong>try-with-resources 和 multiple catch</strong>，具体可以参考下面的代码段。在编译时期，会自动生成相应的处理逻辑，比如，自动按照约定俗成 close 那些扩展了 AutoCloseable 或者 Closeable 的对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (BufferedReader br = <span class="keyword">new</span> BufferedReader(…);</span><br><span class="line">     BufferedWriter writer = <span class="keyword">new</span> BufferedWriter(…)) &#123;<span class="comment">// Try-with-resources</span></span><br><span class="line"><span class="comment">// do something</span></span><br><span class="line"><span class="keyword">catch</span> ( IOException | XEception e) &#123;<span class="comment">// Multiple catch</span></span><br><span class="line">   <span class="comment">// Handle it</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h1 id="问题二：运行时异常与一般异常有什么区别？"><a href="#问题二：运行时异常与一般异常有什么区别？" class="headerlink" title="问题二：运行时异常与一般异常有什么区别？"></a>问题二：运行时异常与一般异常有什么区别？</h1>
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">hexo</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">随笔</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">异常</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/前端//" class="article-tag-list-link color3">前端</a>
+        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
         		</li>
       		
 		</ul>
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/02/08/Java/2.0%20Exception%E5%92%8CError%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2020/02/08/Java/2.2%20NoClassDefFoundError-%E5%92%8C-ClassNotFoundException-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          2.2 NoClassDefFoundError 和 ClassNotFoundException 有什么区别?
+        
+      </div>
+    </a>
   
   
-    </div></section>
+    <a href="/2020/02/07/%E6%95%B0%E5%AD%A6/%E7%A8%8B%E5%BA%8F%E5%91%98%E5%BA%94%E8%AF%A5%E6%80%8E%E4%B9%88%E5%AD%A6%E6%95%B0%E5%AD%A6/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">程序员应该怎么学数学?</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#问题一：请对比Exception和Error？"><span class="toc-number">1.</span> <span class="toc-text">问题一：请对比Exception和Error？</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#相同点"><span class="toc-number">1.1.</span> <span class="toc-text">相同点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#不同点"><span class="toc-number">1.2.</span> <span class="toc-text">不同点</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#在日常编程中，如何处理好异常？是比较考验功底的—–掌握两个方面"><span class="toc-number">2.</span> <span class="toc-text">在日常编程中，如何处理好异常？是比较考验功底的—–掌握两个方面</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、理解Throwable、Exception、Error的设计和分类"><span class="toc-number">2.1.</span> <span class="toc-text">一、理解Throwable、Exception、Error的设计和分类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、理解-Java-语言中操作-Throwable-的元素和实践"><span class="toc-number">2.2.</span> <span class="toc-text">二、理解 Java 语言中操作 Throwable 的元素和实践</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#问题二：运行时异常与一般异常有什么区别？"><span class="toc-number">3.</span> <span class="toc-text">问题二：运行时异常与一般异常有什么区别？</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
 
+  
+
+  
 
 
           </div>
@@ -244,10 +409,10 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
-		isCategory: true,
+		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
 		root: "/",
