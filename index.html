@@ -174,7 +174,108 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h1 id="1、C-与Java在运行方式上的不同"><a href="#1、C-与Java在运行方式上的不同" class="headerlink" title="1、C++与Java在运行方式上的不同"></a>1、C++与Java在运行方式上的不同</h1><h2 id="1-1、Java-代码有很多种不同的运行方式。"><a href="#1-1、Java-代码有很多种不同的运行方式。" class="headerlink" title="1.1、Java 代码有很多种不同的运行方式。"></a>1.1、Java 代码有很多种不同的运行方式。</h2><ol>
+<li><p>可以在开发工具中运行，</p>
+</li>
+<li><p>可以双击执行 jar 文件运行，</p>
+</li>
+<li><p>也可以在命令行中运行，</p>
+</li>
+<li><p>甚至可以在网页中运行。</p>
+</li>
+</ol>
+<p>当然，这些执行方式都离不开 JRE，也就是 Java 运行时环境。</p>
+<ul>
+<li><p>JRE 仅包含运行 Java 程序的必需组件，包括 Java 虚拟机以及 Java 核心类库等。</p>
+</li>
+<li><p>Java 程序员经常接触到的 JDK（Java 开发工具包）同样包含了 JRE，并且还附带了一系列开发、诊断工具。</p>
+</li>
+</ul>
+<h2 id="1-2、C-的运行方式"><a href="#1-2、C-的运行方式" class="headerlink" title="1.2、C++的运行方式"></a>1.2、C++的运行方式</h2><p>运行 C++ 代码则无需额外的运行时。我们往往把这些代码直接编译成 CPU 所能理解的代码格式，也就是机器码。</p>
+<p>比如下图的中间列，就是用 C 语言写的 Helloworld 程序的编译结果。可以看到，<strong>C 程序编译而成的机器码就是一个个的字节，它们是给机器读的</strong>。那么为了让开发人员也能够理解，我们可以用<u>反汇编器</u>将其转换成汇编代码（如下图的最右列所示）。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#  最左列是偏移      中间列是给机器读的机器码      最右列是给人读的汇编代码</span></span><br><span class="line">0x00:  55                    push   rbp</span><br><span class="line">0x01:  48 89 e5              mov    rbp,rsp</span><br><span class="line">0x04:  48 83 ec 10           sub    rsp,0x10</span><br><span class="line">0x08:  48 8d 3d 3b 00 00 00  lea    rdi,[rip+0x3b] </span><br><span class="line">                                    ; 加载<span class="string">"Hello, World!\n"</span></span><br><span class="line">0x0f:  c7 45 <span class="built_in">fc</span> 00 00 00 00  mov    DWORD PTR [rbp-0x4],0x0</span><br><span class="line">0x16:  b0 00                 mov    al,0x0</span><br><span class="line">0x18:  e8 0d 00 00 00        call   0x12</span><br><span class="line">                                    ; 调用<span class="built_in">printf</span>方法</span><br><span class="line">0x1d:  31 c9                 xor    ecx,ecx</span><br><span class="line">0x1f:  89 45 f8              mov    DWORD PTR [rbp-0x8],eax</span><br><span class="line">0x22:  89 c8                 mov    eax,ecx</span><br><span class="line">0x24:  48 83 c4 10           add    rsp,0x10</span><br><span class="line">0x28:  5d                    pop    rbp</span><br><span class="line">0x29:  c3                    ret</span><br></pre></td></tr></table></figure>
+
+<h1 id="2、为什么Java要在虚拟机里运行？"><a href="#2、为什么Java要在虚拟机里运行？" class="headerlink" title="2、为什么Java要在虚拟机里运行？"></a>2、为什么Java要在虚拟机里运行？</h1><p>Java 作为一门高级程序语言，它的语法非常复杂，抽象程度也很高。因此，直接在硬件上运行这种复杂的程序并不现实。所以呢，在运行 Java 程序之前，我们需要对其进行一番转换。</p>
+<p>这个转换具体是怎么操作的呢？</p>
+<blockquote>
+<p> 当前的主流思路是这样子的，<strong>设计一个面向 Java 语言特性的虚拟机，并通过编译器将 Java 程序转换成该虚拟机所能识别的指令序列，也称 Java 字节码</strong>。</p>
+<p>之所以这么取名，是因为 Java 字节码指令的操作码（opcode）被固定为一个字节。</p>
+</blockquote>
+<p>下列代码为使用Java编写的helloworld程序编译而成的字节码，如上面C版本一样，都是由一个一个字节组成的。但是Java版本的编译结果相对精简一点。这是因为 Java 虚拟机相对于物理机而言，抽象程度更高。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 最左列是偏移；    中间列是给虚拟机读的机器码；     最右列是给人读的代码</span></span><br><span class="line">0x00:  b2 00 02         getstatic java.lang.System.out</span><br><span class="line">0x03:  12 03            ldc <span class="string">"Hello, World!"</span></span><br><span class="line">0x05:  b6 00 04         invokevirtual java.io.PrintStream.println</span><br><span class="line">0x08:  b1               <span class="built_in">return</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-1、“一次编写，到处运行”—-gt-提供可移植性"><a href="#2-1、“一次编写，到处运行”—-gt-提供可移植性" class="headerlink" title="2.1、“一次编写，到处运行”—&gt;提供可移植性"></a>2.1、“一次编写，到处运行”—&gt;提供可移植性</h2><p>Java 虚拟机可以由硬件实现，但更为常见的是在各个现有平台（如 Windows_x64、Linux_aarch64）上提供软件实现。这么做的意义在于，一旦一个程序被转换成 Java 字节码，那么它便可以在不同平台上的虚拟机实现里运行。这也就是我们经常说的“一次编写，到处运行”。</p>
+<h2 id="2-2、托管环境（Managed-Runtime）"><a href="#2-2、托管环境（Managed-Runtime）" class="headerlink" title="2.2、托管环境（Managed Runtime）"></a>2.2、托管环境（Managed Runtime）</h2><p>虚拟机的另外一个好处是它带来了一个托管环境（Managed Runtime）。<strong>这个托管环境能够代替我们处理一些代码中冗长而且容易出错的部分。</strong>其中最广为人知的当属自动内存管理与垃圾回收，这部分内容甚至催生了一波垃圾回收调优的业务。</p>
+<p>除此之外，托管环境还提供了诸如数组越界、动态类型、安全权限等等的动态检测，使我们免于书写这些无关业务逻辑的代码。</p>
+<h1 id="3、Java-虚拟机具体是怎样运行-Java-字节码的？"><a href="#3、Java-虚拟机具体是怎样运行-Java-字节码的？" class="headerlink" title="3、Java 虚拟机具体是怎样运行 Java 字节码的？"></a>3、Java 虚拟机具体是怎样运行 Java 字节码的？</h1><p>以标准 JDK 中的 HotSpot 虚拟机为例，从虚拟机以及底层硬件两个角度讲一讲 Java 虚拟机具体是怎么运行 Java 字节码的。</p>
+<h2 id="3-1、从虚拟机视角来看"><a href="#3-1、从虚拟机视角来看" class="headerlink" title="3.1、从虚拟机视角来看"></a>3.1、从虚拟机视角来看</h2><p>执行 Java 代码首先需要将它编译而成的 class 文件加载到 Java 虚拟机中。<strong>加载后的 Java 类会被存放于方法区（Method Area）中。实际运行时，虚拟机会执行方法区内的代码。</strong></p>
+<p>如果你熟悉 X86 的话，你会发现这和段式内存管理中的代码段类似。而且，<strong>Java 虚拟机同样也在内存中划分出堆和栈来存储运行时数据。</strong></p>
+<p>不同的是，Java 虚拟机会将<strong>栈</strong>细分为</p>
+<blockquote>
+<ol>
+<li>面向 Java 方法的 <strong>Java 方法栈</strong>，</li>
+<li>面向本地方法（用 C++ 写的 native 方法）的<strong>本地方法栈</strong>，</li>
+<li>以及存放各个线程执行位置的 <strong>PC 寄存器</strong>。</li>
+</ol>
+</blockquote>
+<p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gbpzsb9aydj31h80tu0vs.jpg" style="zoom:;" />在运行过程中，每当调用进入一个 Java 方法，Java 虚拟机会在当前线程的 Java 方法栈中生成一个栈帧，用以存放局部变量以及字节码的操作数。这个栈帧的大小是提前计算好的，而且 Java 虚拟机不要求栈帧在内存空间里连续分布。</p>
+<p>当退出当前执行的方法时，不管是正常返回还是异常返回，Java 虚拟机均会弹出当前线程的当前栈帧，并将之舍弃。</p>
+<blockquote>
+<p><strong>栈帧</strong>也叫过程活动记录（对应一个未运行完的函数），是编译器用来实现过程/函数调用的一种数据结构。简言之，<strong>栈帧</strong>就是利用<code>EBP</code>（栈帧指针，<strong>请注意不是ESP</strong>）寄存器访问局部变量、参数、函数返回地址等的手段。</p>
+<p>每个方法调用会在栈上划出一块作为栈帧(stack frame)。栈是由多个栈帧构成的，就好比电影是由一个个帧构成的。</p>
+</blockquote>
+<h2 id="3-2、从硬件视角来看"><a href="#3-2、从硬件视角来看" class="headerlink" title="3.2、从硬件视角来看"></a>3.2、从硬件视角来看</h2><p>从硬件视角来看，Java 字节码无法直接执行。因此，Java 虚拟机需要将字节码翻译成机器码。</p>
+<p>在 HotSpot 里面，上述翻译过程有两种形式：</p>
+<ul>
+<li>第一种是解释执行，即逐条将字节码翻译成机器码并执行；</li>
+</ul>
+<blockquote>
+<p>优势在于无需等待编译</p>
+</blockquote>
+<ul>
+<li>第二种是即时编译（Just-In-Time compilation，JIT），即将一个方法中包含的所有字节码编译成机器码后再执行。</li>
+</ul>
+<blockquote>
+<p>优势在于实际运行速度更快</p>
+</blockquote>
+<p>HotSpot 默认采用<strong>混合模式</strong>，综合了解释执行和即时编译两者的优点。它会先解释执行字节码，而后将其中反复执行的热点代码，<u><strong>以方法为单位进行即时编译</strong></u>。翻译成机器码后直接运行在底层硬件之上。</p>
+<p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gbq066z5rij31ha0twn06.jpg" alt=""></p>
+<h2 id="3-3、总结"><a href="#3-3、总结" class="headerlink" title="3.3、总结"></a>3.3、总结</h2><p>Java 虚拟机将运行时内存区域划分为五个部分，分别为</p>
+<ol>
+<li><p>方法区</p>
+</li>
+<li><p>堆</p>
+</li>
+<li><p>PC 寄存器</p>
+</li>
+<li><p>Java 方法栈</p>
+</li>
+<li><p>本地方法栈</p>
+</li>
+</ol>
+<p>Java 程序编译而成的 class 文件，需要先加载至方法区中，方能在 Java 虚拟机中运行。</p>
+<h1 id="4、Java-虚拟机的运行效率究竟是怎么样的？"><a href="#4、Java-虚拟机的运行效率究竟是怎么样的？" class="headerlink" title="4、Java 虚拟机的运行效率究竟是怎么样的？"></a>4、Java 虚拟机的运行效率究竟是怎么样的？</h1><p>HotSpot 采用了多种技术来提升启动性能以及峰值性能，即时编译便是其中最重要的技术之一。</p>
+<p>即时编译建立在程序符合二八定律的假设上，也就是百分之二十的代码占据了百分之八十的计算资源。</p>
+<p>对于占据大部分的不常用的代码，我们无需耗费时间将其编译成机器码，而是采取解释执行的方式运行；另一方面，对于仅占据小部分的热点代码，我们则可以将其编译成机器码，以达到理想的运行速度。</p>
+<p>理论上讲，即时编译后的 Java 程序的执行效率，是可能超过 C++ 程序的。<strong>这是因为与静态编译相比，即时编译拥有程序的运行时信息，并且能够根据这个信息做出相应的优化。</strong></p>
+<blockquote>
+<p>举个例子，我们知道<strong>虚方法</strong>是用来实现面向对象语言多态性的。对于一个虚方法调用，尽管它有很多个目标方法，但在实际运行过程中它可能只调用其中的一个。</p>
+<p>这个信息便可以被即时编译器所利用，来规避虚方法调用的开销，从而达到比静态编译的 C++ 程序更高的性能。</p>
+</blockquote>
+<h2 id="4-1、C1即时编译器（Client-编译器）"><a href="#4-1、C1即时编译器（Client-编译器）" class="headerlink" title="4.1、C1即时编译器（Client 编译器）"></a>4.1、C1即时编译器（Client 编译器）</h2><p>之所以引入多个即时编译器，是为了<strong>在编译时间和生成代码的执行效率之间进行取舍</strong>。C1 又叫做 Client 编译器，面向的是<u>对启动性能有要求</u>的客户端 GUI 程序，采用的优化手段相对简单，因此编译时间较短。</p>
+<h2 id="4-2、C2即时编译器（Server-编译器）"><a href="#4-2、C2即时编译器（Server-编译器）" class="headerlink" title="4.2、C2即时编译器（Server 编译器）"></a>4.2、C2即时编译器（Server 编译器）</h2><p>C2 又叫做 Server 编译器，面向的是<u>对峰值性能有要求</u>的服务器端程序，采用的优化手段相对复杂，因此编译时间较长，但同时生成代码的执行效率较高。</p>
+<h2 id="4-3、Graal即时编译器"><a href="#4-3、Graal即时编译器" class="headerlink" title="4.3、Graal即时编译器"></a>4.3、Graal即时编译器</h2><p>Graal 是 Java 10 正式引入的实验性即时编译器</p>
+<hr>
+<p>从 Java 7 开始，<strong>HotSpot 默认采用分层编译的方式</strong>：热点方法首先会被 C1 编译，而后热点方法中的热点会进一步被 C2 编译。</p>
+<blockquote>
+<p>热点代码的区别，在git里面涉及到的热点代码有两种算法，</p>
+<p>基于采样的热点探测和基于计数器的热点探测。</p>
+<p>一般采用的都是基于计数器的热点探测，两者的优缺点百度一下就知道了。基于计数器的热点探测又有两个计数器，方法调用计数器，回边计数器，他们在C1和C2又有不同的阈值。</p>
+</blockquote>
+<p>为了不干扰应用的正常运行，<strong>HotSpot 的即时编译是放在额外的编译线程中进行的。</strong>HotSpot 会根据 CPU 的数量设置编译线程的数目，并且按 1:2 的比例配置给 C1 及 C2 编译器。</p>
+<p>在计算资源充足的情况下，字节码的解释执行和即时编译可同时进行。编译完成后的机器码会在下次调用该方法时启用，以替换原本的解释执行。</p>
+<p><a href="https://blog.csdn.net/jiaobuchong/article/details/83037467" target="_blank" rel="noopener">awk</a></p>
+
       
 
       
@@ -182,7 +283,37 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">jvm</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/java/jvm//" class="article-tag-list-link color4">jvm</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
 
       
         <p class="article-more-link">
@@ -1545,6 +1676,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">异常</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">jvm</a>
               </li>
             
             <div class="clearfix"></div>
