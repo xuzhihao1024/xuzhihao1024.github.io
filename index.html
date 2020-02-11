@@ -154,6 +154,155 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Java/java核心技术面试/3-0-谈谈final、finally、-finalize有什么不同？" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/11/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/3-0-%E8%B0%88%E8%B0%88final%E3%80%81finally%E3%80%81-finalize%E6%9C%89%E4%BB%80%E4%B9%88%E4%B8%8D%E5%90%8C%EF%BC%9F/">3.0 | 谈谈final、finally、 finalize有什么不同？</a>
+    </h1>
+  
+
+        
+        <a href="/2020/02/11/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/3-0-%E8%B0%88%E8%B0%88final%E3%80%81finally%E3%80%81-finalize%E6%9C%89%E4%BB%80%E4%B9%88%E4%B8%8D%E5%90%8C%EF%BC%9F/" class="archive-article-date">
+  	<time datetime="2020-02-11T05:45:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-11</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="典型回答（从语法和使用实践角度出发）"><a href="#典型回答（从语法和使用实践角度出发）" class="headerlink" title="典型回答（从语法和使用实践角度出发）"></a>典型回答（从语法和使用实践角度出发）</h1><ul>
+<li>final 可以用来修饰类、方法、变量，分别有不同的意义，final 修饰的 class 代表不可以继承扩展，final 的变量是不可以修改的，而 final 的方法也是不可以重写的（override）。</li>
+<li>finally 则是 Java 保证重点代码一定要被执行的一种机制。我们可以使用 try-finally 或者 try-catch-finally 来进行类似关闭 JDBC 连接、保证 unlock 锁等动作。</li>
+<li>finalize 是基础类 java.lang.Object 的一个方法，它的设计目的是保证对象在被垃圾收集前完成特定资源的回收。finalize 机制现在已经不推荐使用，并且在 JDK 9 开始被标记为 deprecated。</li>
+</ul>
+<h1 id="进阶回答（从性能、并发、对象生命周期或垃圾收集基本过程等方面的理解）"><a href="#进阶回答（从性能、并发、对象生命周期或垃圾收集基本过程等方面的理解）" class="headerlink" title="进阶回答（从性能、并发、对象生命周期或垃圾收集基本过程等方面的理解）"></a>进阶回答（从性能、并发、对象生命周期或垃圾收集基本过程等方面的理解）</h1><h2 id="1-1-final"><a href="#1-1-final" class="headerlink" title="1.1 final"></a>1.1 final</h2><p>推荐使用 final 关键字来明确表示我们代码的语义、逻辑意图，这已经被证明在很多场景下是非常好的实践，比如：</p>
+<ul>
+<li>我们可以将方法或者类声明为 final，这样就可以明确告知别人，这些行为是不许修改的。</li>
+</ul>
+<blockquote>
+<p>如果你关注过 Java 核心类库的定义或源码， 有没有发现 java.lang 包下面的很多类，相当一部分都被声明成为 final class？在第三方类库的一些基础类中同样如此，这可以有效避免 API 使用者更改基础功能，某种程度上，这是保证平台安全的必要手段。</p>
+</blockquote>
+<ul>
+<li>使用 final 修饰参数或者变量，也可以清楚地避免意外赋值导致的编程错误，甚至，有人明确推荐将所有方法参数、本地变量、成员变量声明成 final。</li>
+<li>final 变量产生了某种程度的不可变（immutable）的效果，所以，可以用于保护只读数据，尤其是在并发编程中，因为明确地不能再赋值 final 变量，有利于减少额外的同步开销，也可以省去一些防御性拷贝的必要。</li>
+</ul>
+<p>final 也许会有性能的好处，很多文章或者书籍中都介绍了可在特定场景提高性能，比如：</p>
+<blockquote>
+<p>利用 final 可能有助于 JVM 将方法进行内联，</p>
+</blockquote>
+<blockquote>
+<p>可以改善编译器进行条件编译的能力等等。</p>
+</blockquote>
+<p>坦白说，很多类似的结论都是基于假设得出的，比如现代高性能 JVM（如 HotSpot）判断内联未必依赖 final 的提示，要相信 JVM 还是非常智能的。类似的，final 字段对性能的影响，大部分情况下，并没有考虑的必要。</p>
+<p>从开发实践的角度，无需过度强调这一点，这是和 JVM 的实现很相关的，未经验证比较难以把握。我的建议是，在日常开发中，除非有特别考虑，不然最好不要指望这种小技巧带来的所谓性能好处，<strong>程序最好是体现它的语义目的</strong>。如果你确实对这方面有兴趣，可以查阅相关资料，我就不再赘述了，不过千万别忘了验证一下。</p>
+<h3 id="1-1-1-注意：final-不是-immutable！"><a href="#1-1-1-注意：final-不是-immutable！" class="headerlink" title="1.1.1 注意：final 不是 immutable！"></a>1.1.1 注意：final 不是 immutable！</h3><p>需要注意的是，final 并不等同于 immutable，比如下面这段代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> List&lt;String&gt; strList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">strList.add(<span class="string">"Hello"</span>);</span><br><span class="line">strList.add(<span class="string">"world"</span>);  </span><br><span class="line"></span><br><span class="line">List&lt;String&gt; unmodifiableStrList = List.of(<span class="string">"hello"</span>, <span class="string">"world"</span>); <span class="comment">//不可变list</span></span><br><span class="line">unmodifiableStrList.add(<span class="string">"again"</span>);   <span class="comment">//会抛出运行时异常</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>final 只能约束 strList 这个引用不可以被赋值，但是 strList 对象行为不被 final 影响</strong>，添加元素等操作是完全正常的。如果我们真的希望对象本身是不可变的，那么需要相应的类支持不可变的行为。在上面这个例子中，List.of 方法创建的本身就是不可变 List，最后那句 add 是会在运行时抛出异常的。</p>
+<h3 id="1-1-2-immutable-的类"><a href="#1-1-2-immutable-的类" class="headerlink" title="1.1.2 immutable 的类"></a>1.1.2 immutable 的类</h3><p>Immutable 在很多场景是非常棒的选择，某种意义上说，Java 语言目前并没有原生的不可变支持，如果要实现 immutable 的类，我们需要做到：</p>
+<blockquote>
+<ol>
+<li>将 class 自身声明为 final，这样别人就不能扩展来绕过限制了。</li>
+<li>将所有成员变量定义为 private 和 final，并且不要实现 setter 方法。</li>
+<li><strong>通常构造对象时，成员变量使用深度拷贝来初始化，而不是直接赋值</strong>，这是一种防御措施，因为你无法确定输入对象不被其他人修改。</li>
+<li>如果确实需要实现 getter 方法，或者其他可能会返回内部状态的方法，使用 copy-on-write 原则，创建私有的 copy。</li>
+</ol>
+</blockquote>
+<p>这些原则是不是在并发编程实践中经常被提到？的确如此。</p>
+<p>关于 setter/getter 方法，很多人喜欢直接用 IDE 一次全部生成，建议最好是你确定有需要时再实现。</p>
+<h2 id="1-2-finallly"><a href="#1-2-finallly" class="headerlink" title="1.2 finallly"></a>1.2 finallly</h2><p>对于 finally，明确知道怎么使用就足够了。需要关闭的连接等资源，更推荐使用 Java 7 中添加的 try-with-resources 语句，因为通常 Java 平台能够更好地处理异常情况，编码量也要少很多，何乐而不为呢。</p>
+<p>下面代码会输出什么？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  <span class="comment">// do something</span></span><br><span class="line">  System.exit(<span class="number">1</span>);</span><br><span class="line">&#125; <span class="keyword">finally</span>&#123;</span><br><span class="line">  System.out.println(“Print from <span class="keyword">finally</span>”);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面 finally 里面的代码可不会被执行的哦，这是一个特例。</p>
+<h2 id="1-3-finalize"><a href="#1-3-finalize" class="headerlink" title="1.3 finalize"></a>1.3 finalize</h2><p>对于 finalize，我们要明确它是不推荐使用的，业界实践一再证明它不是个好的办法，在 Java 9 中，甚至明确将 Object.finalize() 标记为 deprecated！如果没有特别的原因，不要实现 finalize 方法，也不要指望利用它来进行资源回收。</p>
+<p>为什么呢？简单说，你<strong>无法保证 finalize 什么时候执行，执行的是否符合预期。使用不当会影响性能，导致程序死锁、挂起等。</strong></p>
+<p>通常来说，利用上面的提到的 try-with-resources 或者 try-finally 机制，是非常好的回收资源的办法。如果确实需要额外处理，可以考虑 Java 提供的 Cleaner 机制或者其他替代方法。</p>
+<h3 id="1-3-1-finalize问题的具体分析"><a href="#1-3-1-finalize问题的具体分析" class="headerlink" title="1.3.1 finalize问题的具体分析"></a>1.3.1 finalize问题的具体分析</h3><p><strong>finalize 的执行是和垃圾收集关联在一起的</strong>，一旦实现了非空的 finalize 方法，就会导致相应对象回收呈现数量级上的变慢，有人专门做过 benchmark，大概是 40~50 倍的下降。</p>
+<p>因为，finalize 被设计成在对象<strong>被垃圾收集前</strong>调用，这就意味着实现了 finalize 方法的对象是个“特殊公民”，JVM 要对它进行额外处理。<u>finalize 本质上成为了快速回收的阻碍者，可能导致你的对象经过多个垃圾收集周期才能被回收。</u></p>
+<p>有人也许会问，我用 System.runFinalization() 告诉 JVM 积极一点，是不是就可以了？</p>
+<p>也许有点用，但是问题在于，这还是不可预测、不能保证的，所以本质上还是不能指望。实践中，因为 finalize 拖慢垃圾收集，导致大量对象堆积，也是一种典型的导致 <a href="https://www.cnblogs.com/thinkvenus/p/6805495.html" target="_blank" rel="noopener">OOM（Out Of Memory）</a> 的原因。</p>
+<p>从另一个角度，我们要确保回收资源就是因为资源都是有限的，垃圾收集时间的不可预测，可能会极大加剧资源占用。这意味着对于消耗非常高频的资源，千万不要指望 finalize 去承担资源释放的主要职责，最多让 finalize 作为最后的“守门员”，况且它已经暴露了如此多的问题。这也是为什么推荐：<strong>资源用完即显式释放，或者利用资源池来尽量重用。</strong></p>
+<p>finalize 还会掩盖资源回收时的出错信息，我们看下面一段 JDK 的源代码，截取自 java.lang.ref.Finalizer</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">runFinalizer</span><span class="params">(JavaLangAccess jla)</span> </span>&#123;</span><br><span class="line"> <span class="comment">//  ... 省略部分代码</span></span><br><span class="line"> <span class="keyword">try</span> &#123;</span><br><span class="line">    Object finalizee = <span class="keyword">this</span>.get(); </span><br><span class="line">    <span class="keyword">if</span> (finalizee != <span class="keyword">null</span> &amp;&amp; !(finalizee <span class="keyword">instanceof</span> java.lang.Enum)) &#123;</span><br><span class="line">       jla.invokeFinalize(finalizee);</span><br><span class="line">       <span class="comment">// Clear stack slot containing this variable, to decrease</span></span><br><span class="line">       <span class="comment">// the chances of false retention with a conservative GC</span></span><br><span class="line">       finalizee = <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (Throwable x) &#123; &#125;</span><br><span class="line">    <span class="keyword">super</span>.clear(); </span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>是的，你没有看错，这里的 Throwable 是被生吞了的！也就意味着一旦出现异常或者出错，你得不到任何有效信息。况且，Java 在 finalize 阶段也没有好的方式处理任何信息，不然更加不可预测。</p>
+<h3 id="1-3-2-有什么机制可以替换finalize吗？"><a href="#1-3-2-有什么机制可以替换finalize吗？" class="headerlink" title="1.3.2 有什么机制可以替换finalize吗？"></a>1.3.2 有什么机制可以替换finalize吗？</h3><p>Java 平台目前在逐步使用 java.lang.ref.Cleaner 来替换掉原有的 finalize 实现。Cleaner 的实现利用了<strong>幻象引用（PhantomReference）</strong>，这是一种常见的所谓 post-mortem 清理机制。利用幻象引用和引用队列，我们可以保证对象被彻底销毁前做一些类似资源回收的工作，比如关闭文件描述符（操作系统有限的资源），它比 finalize 更加轻量、更加可靠。</p>
+<p>吸取了 finalize 里的教训，每个 Cleaner 的操作都是独立的，它有自己的运行线程，所以可以避免意外死锁等问题。</p>
+<p>实践中，我们可以为自己的模块构建一个 Cleaner，然后实现相应的清理逻辑。下面是 JDK 自身提供的样例程序：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CleaningExample</span> <span class="keyword">implements</span> <span class="title">AutoCloseable</span> </span>&#123;</span><br><span class="line">        <span class="comment">// A cleaner, preferably one shared within a library</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Cleaner cleaner = &lt;cleaner&gt;;</span><br><span class="line">        <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">State</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123; </span><br><span class="line">            State(...) &#123;</span><br><span class="line">                <span class="comment">// initialize State needed for cleaning action</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="comment">// cleanup action accessing State, executed at most once</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> State;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> Cleaner.Cleanable cleanable</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">CleaningExample</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.state = <span class="keyword">new</span> State(...);</span><br><span class="line">            <span class="keyword">this</span>.cleanable = cleaner.register(<span class="keyword">this</span>, state);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            cleanable.clean();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意，从可预测性的角度来判断，Cleaner 或者幻象引用改善的程度仍然是有限的，如果由于种种原因导致幻象引用堆积，同样会出现问题。所以，Cleaner 适合作为一种最后的保证手段，而不是完全依赖 Cleaner 进行资源回收，不然我们就要再做一遍 finalize 的噩梦了。</p>
+<p>我也注意到很多第三方库自己直接利用幻象引用定制资源收集，比如广泛使用的 MySQL JDBC driver 之一的 mysql-connector-j，就利用了幻象引用机制。幻象引用也可以进行类似链条式依赖关系的动作，比如，进行总量控制的场景，保证只有连接被关闭，相应资源被回收，连接池才能创建新的连接。</p>
+<p>另外，这种代码如果稍有不慎添加了对资源的强引用关系，就会导致循环引用关系，前面提到的 MySQL JDBC 就在特定模式下有这种问题，导致内存泄漏。上面的示例代码中，将 State 定义为 static，就是为了避免普通的内部类隐含着对外部对象的强引用，因为那样会使外部对象无法进入幻象可达的状态。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/02/11/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/3-0-%E8%B0%88%E8%B0%88final%E3%80%81finally%E3%80%81-finalize%E6%9C%89%E4%BB%80%E4%B9%88%E4%B8%8D%E5%90%8C%EF%BC%9F/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-SQL/01丨了解SQL：一门半衰期很长的语言" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1211,351 +1360,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2020/02/06/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/1.%E5%AF%B9Java%E5%B9%B3%E5%8F%B0%E7%9A%84%E7%90%86%E8%A7%A3/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-日程安排/2020年实习准备" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/06/%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92/2020%E5%B9%B4%E5%AE%9E%E4%B9%A0%E5%87%86%E5%A4%87/">2020年实习准备</a>
-    </h1>
-  
-
-        
-        <a href="/2020/02/06/%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92/2020%E5%B9%B4%E5%AE%9E%E4%B9%A0%E5%87%86%E5%A4%87/" class="archive-article-date">
-  	<time datetime="2020-02-06T05:38:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="总任务"><a href="#总任务" class="headerlink" title="总任务"></a>总任务</h1><table>
-<thead>
-<tr>
-<th align="center">任务名称</th>
-<th align="center">计划完成时间</th>
-<th align="center">备注</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">算法面试通关40讲——极客时间</td>
-<td align="center">62个视频</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">leetcode面试200题</td>
-<td align="center">19/200</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">Java核心技术面试精讲</td>
-<td align="center">43讲</td>
-<td align="center">3/43</td>
-</tr>
-<tr>
-<td align="center">MyBatis</td>
-<td align="center">4天</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">SpringMvc</td>
-<td align="center">3天</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">Spring</td>
-<td align="center">4天</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">SpringBoot</td>
-<td align="center">4天</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">vue.js</td>
-<td align="center">1天</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">《牛客网》java面试题</td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">工程实践项目</td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-</tbody></table>
-<h1 id="任务拆解"><a href="#任务拆解" class="headerlink" title="任务拆解"></a>任务拆解</h1><h2 id="算法面试通关40讲"><a href="#算法面试通关40讲" class="headerlink" title="算法面试通关40讲"></a>算法面试通关40讲</h2><table>
-<thead>
-<tr>
-<th>完成</th>
-<th>时间</th>
-<th>备注</th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<h2 id="Java核心技术面试精讲"><a href="#Java核心技术面试精讲" class="headerlink" title="Java核心技术面试精讲"></a>Java核心技术面试精讲</h2><table>
-<thead>
-<tr>
-<th>时间</th>
-<th>完成</th>
-<th>备注</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>2020.2.8</td>
-<td>3/43</td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<h2 id="MyBatis"><a href="#MyBatis" class="headerlink" title="MyBatis"></a>MyBatis</h2><table>
-<thead>
-<tr>
-<th>任务</th>
-<th>计划时间</th>
-<th>实际完成完成</th>
-<th>备注</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>day01–整理笔记</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>day02–整理笔记</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>day03–整理笔记</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>day04–整理笔记</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<h2 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h2><table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<h2 id="SpringMvc"><a href="#SpringMvc" class="headerlink" title="SpringMvc"></a>SpringMvc</h2><table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<h2 id="SpringBoot"><a href="#SpringBoot" class="headerlink" title="SpringBoot"></a>SpringBoot</h2><table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<h2 id="vue-js"><a href="#vue-js" class="headerlink" title="vue.js"></a>vue.js</h2><table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<h2 id="《牛客网》java面试题"><a href="#《牛客网》java面试题" class="headerlink" title="《牛客网》java面试题"></a>《牛客网》java面试题</h2><table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<h2 id="工程实践项目"><a href="#工程实践项目" class="headerlink" title="工程实践项目"></a>工程实践项目</h2>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">日程计划</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/日程计划//" class="article-tag-list-link color5">日程计划</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/06/%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92/2020%E5%B9%B4%E5%AE%9E%E4%B9%A0%E5%87%86%E5%A4%87/">展开全文 >></a>
         </p>
       
 
