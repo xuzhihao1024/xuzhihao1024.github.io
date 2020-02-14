@@ -6,14 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>xuzhihao的博客</title>
+  <title>5 | String、StringBuffer、StringBuilder有什么区别？ | xuzhihao的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="xuzhihao的博客">
-<meta property="og:url" content="http://yoursite.com/page/2/index.html">
+  <meta name="description" content="字符串几乎在所有编程语言里都是个特殊的存在，因为不管是数量还是体积，字符串都是大多数应用中的重要组成。 典型回答 String 是 Java 语言非常基础和重要的类，提供了构造和管理字符串的各种基本逻辑。  由于String在Java世界中使用过于频繁，Java为了避免在一个系统中产生大量的String对象，引入了字符串常量池。其运行机制是：创建一个字符串时，首先检查池中是否有值相同的字符串对象，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="5 | String、StringBuffer、StringBuilder有什么区别？">
+<meta property="og:url" content="http://yoursite.com/2020/02/13/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/5-String%E3%80%81StringBuffer%E3%80%81StringBuilder%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/index.html">
 <meta property="og:site_name" content="xuzhihao的博客">
+<meta property="og:description" content="字符串几乎在所有编程语言里都是个特殊的存在，因为不管是数量还是体积，字符串都是大多数应用中的重要组成。 典型回答 String 是 Java 语言非常基础和重要的类，提供了构造和管理字符串的各种基本逻辑。  由于String在Java世界中使用过于频繁，Java为了避免在一个系统中产生大量的String对象，引入了字符串常量池。其运行机制是：创建一个字符串时，首先检查池中是否有值相同的字符串对象，">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-02-13T09:46:10.000Z">
+<meta property="article:modified_time" content="2020-02-14T02:30:19.828Z">
 <meta property="article:author" content="Jason Xu">
+<meta property="article:tag" content="java">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="xuzhihao的博客" type="application/atom+xml">
@@ -152,61 +157,144 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-Java/java核心技术面试/2.0 Exception和Error有什么区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-Java/java核心技术面试/5-String、StringBuffer、StringBuilder有什么区别？" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/08/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/2.0%20Exception%E5%92%8CError%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB/">2.0 Exception和Error有什么区别?</a>
+    <h1 class="article-title" itemprop="name">
+      5 | String、StringBuffer、StringBuilder有什么区别？
     </h1>
   
 
         
-        <a href="/2020/02/08/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/2.0%20Exception%E5%92%8CError%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB/" class="archive-article-date">
-  	<time datetime="2020-02-07T16:06:16.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-08</time>
+        <a href="/2020/02/13/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/5-String%E3%80%81StringBuffer%E3%80%81StringBuilder%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/" class="archive-article-date">
+  	<time datetime="2020-02-13T09:46:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-13</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>Java 语言在设计之初就提供了相对完善的异常处理机制，这也是 Java 得以大行其道的原因之一，因为这种机制大大降低了编写和维护可靠程序的门槛。</p>
-<p>如今，异常处理机制已经成为现代编程语言的标配。</p>
-<h1 id="问题一：请对比Exception和Error？"><a href="#问题一：请对比Exception和Error？" class="headerlink" title="问题一：请对比Exception和Error？"></a>问题一：请对比Exception和Error？</h1><h2 id="相同点"><a href="#相同点" class="headerlink" title="相同点"></a>相同点</h2><p>Exception 和 Error 都是继承了 Throwable 类，在 Java 中<strong>只有 Throwable 类型的实例</strong>才可以被抛出（throw）或者捕获（catch），它是异常处理机制的基本组成类型。</p>
-<h2 id="不同点"><a href="#不同点" class="headerlink" title="不同点"></a>不同点</h2><p>Exception 和 Error 体现了 Java 平台设计者对不同异常情况的分类。</p>
-<ul>
-<li>Exception 是程序正常运行中，可以预料的意外情况，可能并且应该被捕获，进行相应处理。</li>
+        <p>字符串几乎在所有编程语言里都是个特殊的存在，因为不管是数量还是体积，字符串都是大多数应用中的重要组成。</p>
+<h1 id="典型回答"><a href="#典型回答" class="headerlink" title="典型回答"></a>典型回答</h1><ul>
+<li><code>String</code> 是 Java 语言非常基础和重要的类，提供了构造和管理字符串的各种基本逻辑。</li>
 </ul>
+<p>由于String在Java世界中使用过于频繁，Java为了避免在一个系统中产生大量的String对象，引入了<strong>字符串常量池</strong>。其运行机制是：创建一个字符串时，首先检查池中是否有值相同的字符串对象，如果有则不需要创建直接从池中刚查找到的对象引用；如果没有则新建字符串对象，返回对象引用，并且将新创建的对象放入池中。但是，通过new方法创建的String对象是不检查字符串池的，而是直接在堆区或栈区创建一个新的对象，也不会把对象放入池中。上述原则只适用于通过直接给String对象引用赋值的情况。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String str1 = <span class="string">"123"</span>; <span class="comment">//通过直接量赋值方式，放入字符串常量池</span></span><br><span class="line">String str2 = <span class="keyword">new</span> String(“<span class="number">123</span>”);<span class="comment">//通过new方式赋值方式，不放入字符串常量池</span></span><br></pre></td></tr></table></figure>
+
+<p>注意：String提供了inter()方法。调用该方法时，如果常量池中包括了一个等于此String对象的字符串（由equals方法确定），则返回池中的字符串。否则，将此String对象添加到池中，并且返回此池中对象的引用。</p>
+<p>针对常量池的优化。当2个String对象拥有相同的值时，他们只引用常量池中的同一个拷贝。当同一个字符串反复出现时，这个技术可以大幅度节省内存空间。</p>
 <blockquote>
-<p> Exception 又分为<strong>可检查（checked）</strong>异常和<strong>不检查（unchecked）</strong>异常，</p>
-<ul>
-<li>可检查异常：在源代码里必须显式地进行捕获处理，<u>这是编译期检查的一部分</u>。注意前面介绍的不可查的 Error，是 Throwable 不是 Exception。</li>
-<li>不检查异常：就是所谓的运行时异常，类似 NullPointerException、ArrayIndexOutOfBoundsException 之类，<u>通常是可以编码避免的逻辑错误，具体根据需要来判断是否需要捕获，并不会在编译期强制要求。</u></li>
-</ul>
+<p> <strong>不可变性</strong>：它是典型的 <code>Immutable</code> 类，被声明成为 final class，所有属性也都是 final 的。一旦生成则不能再对它进行改变。也由于它的不可变性，类似拼接、裁剪字符串等动作，都会产生新的 String 对象。由于字符串操作的普遍性，所以相关操作的效率往往对应用性能有明显影响。</p>
+<p>不可变的主要作用在于当一个对象需要被多线程共享，并且访问频繁时，可以省略同步和锁等待的时间，从而大幅度提高系统性能。不可变模式是一个可以提高多线程程序的性能，降低多线程程序复杂度的设计模式。</p>
+<p>字符串操作不当可能会产生大量临时字符串，以及线程安全方面的区别。</p>
 </blockquote>
 <ul>
-<li>Error 是指在正常情况下，不大可能出现的情况，绝大部分的 Error 都会导致程序（比如 JVM 自身）处于非正常的、不可恢复状态。既然是非正常情况，所以不便于也不需要捕获，常见的比如 OutOfMemoryError 之类，都是 Error 的子类。</li>
+<li><p><code>StringBuffer</code> 是为解决上面提到拼接产生太多中间对象的问题而提供的一个类，我们可以用 append 或者 add 方法，把字符串添加到已有序列的末尾或者指定位置。<strong>StringBuffer 本质是一个线程安全的可修改字符序列</strong>，它保证了线程安全，也随之带来了额外的性能开销，所以除非有线程安全的需要，不然还是推荐使用它的后继者，也就是 StringBuilder。</p>
+</li>
+<li><p><code>StringBuilder</code> 是 Java 1.5 中新增的，在能力上和 StringBuffer 没有本质区别，但是它去掉了线程安全的部分，有效减小了开销，是绝大部分情况下进行字符串拼接的首选。</p>
+</li>
 </ul>
-<h1 id="在日常编程中，如何处理好异常？是比较考验功底的—–掌握两个方面"><a href="#在日常编程中，如何处理好异常？是比较考验功底的—–掌握两个方面" class="headerlink" title="在日常编程中，如何处理好异常？是比较考验功底的—–掌握两个方面"></a>在日常编程中，如何处理好异常？是比较考验功底的—–掌握两个方面</h1><h2 id="一、理解Throwable、Exception、Error的设计和分类"><a href="#一、理解Throwable、Exception、Error的设计和分类" class="headerlink" title="一、理解Throwable、Exception、Error的设计和分类"></a>一、理解Throwable、Exception、Error的设计和分类</h2><p>比如，掌握那些应用最为广泛的子类，以及如何自定义异常等。</p>
-<p>很多面试官会进一步追问一些细节，比如，你了解哪些 Error、Exception 或者 RuntimeException？</p>
-<p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gbot95gybwj30mb0d6mx3.jpg" alt=""></p>
+<p>StringBuffer和StringBuilder都实现了<code>AbstractStringBuilder</code>抽象类，拥有几乎一致对外提供的调用接口；其底层在内存中的存储方式与String相同，都是以一个有序的字符序列（char类型的数组）进行存储，不同点是StringBuffer/StringBuilder对象的值是可以改变的，并且值改变以后，对象引用不会发生改变;两者对象在构造过程中，首先按照默认大小申请一个字符数组，由于会不断加入新数据，当超过默认大小后，会创建一个更大的数组，并将原先的数组内容复制过来，再丢弃旧的数组。因此，对于较大对象的扩容会涉及大量的内存复制操作，如果能够预先评估大小，可提升性能。</p>
+<h1 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h1><ol>
+<li><p>在字符串内容不经常发生变化的业务场景优先使用String类。例如：常量声明、少量的字符串拼接操作等。如果有大量的字符串内容拼接，避免使用String与String之间的“+”操作，因为这样会产生大量无用的中间对象，耗费空间且执行效率低下（新建对象、回收对象花费大量时间）。</p>
+</li>
+<li><p>在频繁进行字符串的运算（如拼接、替换、删除等），并且运行在<strong>多线程环境</strong>下，建议使用StringBuffer，例如XML解析、HTTP参数解析与封装。</p>
+</li>
+<li><p>在频繁进行字符串的运算（如拼接、替换、删除等），并且运行在<strong>单线程环境</strong>下，建议使用StringBuilder，例如SQL语句拼装、JSON封装等。</p>
+</li>
+</ol>
+<h1 id="扩展回答"><a href="#扩展回答" class="headerlink" title="扩展回答"></a>扩展回答</h1><ul>
+<li>通过 String 和相关类，考察基本的线程安全设计与实现，各种基础编程实践。</li>
+<li>考察 JVM 对象缓存机制的理解以及如何良好地使用。</li>
+<li>考察 JVM 优化 Java 代码的一些技巧。</li>
+<li>String 相关类的演进，比如 Java 9 中实现的巨大变化。</li>
+</ul>
+<h2 id="一、字符串设计和实现考量"><a href="#一、字符串设计和实现考量" class="headerlink" title="一、字符串设计和实现考量"></a>一、字符串设计和实现考量</h2><p>前面提到过，<code>String</code> 是 Immutable 类的典型实现，<strong>原生的保证了基础线程安全</strong>，因为你无法对它内部数据进行任何修改，这种便利甚至体现在拷贝构造函数中，由于不可变，<strong>Immutable 对象在拷贝时不需要额外复制数据。</strong></p>
+<p>我们再来看看 <code>StringBuffer</code> 实现的一些细节，<strong>它的线程安全是通过把各种修改数据的方法都加上 synchronized 关键字实现的</strong>，非常直白。其实，这种简单粗暴的实现方式，非常适合我们常见的线程安全类实现，不必纠结于 synchronized 性能之类的，有人说“过早优化是万恶之源”，考虑可靠性、正确性和代码可读性才是大多数应用开发最重要的因素。</p>
+<p>为了实现修改字符序列的目的</p>
 <blockquote>
-<p>其中有些子类型，最好重点理解一下，比如 NoClassDefFoundError 和 ClassNotFoundException 有什么区别，这也是个经典的入门题目。</p>
+<p>StringBuffer 和 StringBuilder 底层都是<strong>利用可修改的（char，JDK 9 以后是 byte）数组</strong>，二者都继承了 <code>AbstractStringBuilder</code>，里面包含了基本操作，区别仅在于最终的方法是否加了 synchronized。</p>
 </blockquote>
-<h2 id="二、理解-Java-语言中操作-Throwable-的元素和实践"><a href="#二、理解-Java-语言中操作-Throwable-的元素和实践" class="headerlink" title="二、理解 Java 语言中操作 Throwable 的元素和实践"></a>二、理解 Java 语言中操作 Throwable 的元素和实践</h2><p>掌握最基本的语法是必须的，如 try-catch-finally 块，throw、throws 关键字等。与此同时，也要懂得如何处理典型场景。</p>
-<p>异常处理代码比较繁琐，比如我们需要写很多千篇一律的捕获代码，或者在 finally 里面做一些资源回收工作。随着 Java 语言的发展，引入了一些更加便利的特性，比如 <strong>try-with-resources 和 multiple catch</strong>，具体可以参考下面的代码段。在编译时期，会自动生成相应的处理逻辑，比如，自动按照约定俗成 close 那些扩展了 AutoCloseable 或者 Closeable 的对象。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (BufferedReader br = <span class="keyword">new</span> BufferedReader(…);</span><br><span class="line">     BufferedWriter writer = <span class="keyword">new</span> BufferedWriter(…)) &#123;<span class="comment">// Try-with-resources</span></span><br><span class="line"><span class="comment">// do something</span></span><br><span class="line"><span class="keyword">catch</span> ( IOException | XEception e) &#123;<span class="comment">// Multiple catch</span></span><br><span class="line">   <span class="comment">// Handle it</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个内部数组应该创建成多大的呢？</p>
+<blockquote>
+<p>如果太小，拼接的时候可能要重新创建足够大的数组；</p>
+<p>如果太大，又会浪费空间。</p>
+<p><strong>目前的实现是，构建时初始字符串长度加上16（这意味着，如果没有构建对象时输入最初的字符串，那么初始值就是 16）。</strong></p>
+<p>我们如果确定拼接会发生非常多次，而且大概是可预计的，那么就可以指定合适的大小，避免很多次扩容的开销。扩容会产生多重开销，因为要抛弃原有数组，创建新的（可以简单认为是倍数）数组，还要进行 arraycopy。</p>
+</blockquote>
+<p>在具体的代码书写中，应该如何选择呢？</p>
+<p>在没有线程安全问题的情况下，全部拼接操作是应该都用 StringBuilder 实现吗？毕竟这样书写的代码，还是要多敲很多字的，可读性也不理想，下面的对比非常明显。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String strByBuilder  = <span class="keyword">new</span> StringBuilder().append(<span class="string">"aa"</span>).append(<span class="string">"bb"</span>).append(<span class="string">"cc"</span>).append</span><br><span class="line">            (<span class="string">"dd"</span>).toString();</span><br><span class="line"><span class="comment">//考虑代码的可读性             </span></span><br><span class="line">String strByConcat = <span class="string">"aa"</span> + <span class="string">"bb"</span> + <span class="string">"cc"</span> + <span class="string">"dd"</span>;</span><br></pre></td></tr></table></figure>
+
+<p>其实，在通常情况下，没有必要过于担心，要相信 Java 还是非常智能的。</p>
+<p>我们来做个实验，把下面一段代码，利用不同版本的 JDK 编译，然后再反编译，例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StringConcat</span> </span>&#123;</span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">concat</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> str + “aa” + “bb”;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>先编译再反编译，比如使用不同版本的 JDK：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$&#123;JAVA_HOME&#125;</span>/bin/javac StringConcat.java</span><br><span class="line"><span class="variable">$&#123;JAVA_HOME&#125;</span>/bin/javap -v StringConcat.class</span><br></pre></td></tr></table></figure>
+
+<p>JDK 8 的输出片段如下，可以看到，非静态的字符创拼接逻辑在 JDK 8 中会自动被 javac 转换为 StringBuilder 操作；</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"> 0: new           <span class="comment">#2                  // class java/lang/StringBuilder</span></span><br><span class="line"> 3: dup</span><br><span class="line"> 4: invokespecial <span class="comment">#3                  // Method java/lang/StringBuilder."&lt;init&gt;":()V</span></span><br><span class="line"> 7: aload_0</span><br><span class="line"> 8: invokevirtual <span class="comment">#4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span></span><br><span class="line">11: ldc           <span class="comment">#5                  // String aa</span></span><br><span class="line">13: invokevirtual <span class="comment">#4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span></span><br><span class="line">16: ldc           <span class="comment">#6                  // String bb</span></span><br><span class="line">18: invokevirtual <span class="comment">#4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span></span><br><span class="line">21: invokevirtual <span class="comment">#7                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;</span></span><br></pre></td></tr></table></figure>
+
+<p>而在 JDK 9 中，反编译的结果就会有点特别了，片段如下。</p>
+<p>在 JDK 9 里面，体现了思路的变化，为了更加统一字符串的操作优化，提供了StringConcatFactory作为一个统一的入口。</p>
+<p>Java 9 利用 InvokeDynamic，将字符串拼接的优化与 javac 生成的字节码解耦，假设未来 JVM 增强相关运行时实现，将不需要依赖 javac 的任何修改。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// concat method</span><br><span class="line">1: invokedynamic <span class="comment">#2,  0              // InvokeDynamic #0:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;</span></span><br><span class="line"></span><br><span class="line">// ...</span><br><span class="line">// 实际是利用了MethodHandle,统一了入口</span><br><span class="line">0: <span class="comment">#15 REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;</span></span><br></pre></td></tr></table></figure>
+
+<p>javac自动生成的普通代码未必是最优化的，但应对普通场景也足够了。</p>
+<p>总结：在日常编程中，保证程序的可读性、可维护性，往往比所谓的最优性能更重要，你可以根据实际需求酌情选择具体的编码方式。</p>
+<h2 id="二、字符串缓存"><a href="#二、字符串缓存" class="headerlink" title="二、字符串缓存"></a>二、字符串缓存</h2><p>我们粗略统计过，把常见应用进行堆转储（Dump Heap），然后分析对象组成，会发现平均 25% 的对象是字符串，并且其中约半数是重复的。如果能避免创建重复字符串，可以有效降低内存消耗和对象创建开销。</p>
+<p>String 在 Java 6 以后提供了 <code>intern()</code> 方法，目的是提示 JVM 把相应字符串缓存起来，以备重复使用。在我们创建字符串对象并调用 intern() 方法的时候，如果已经有缓存的字符串，就会返回缓存里的实例，否则将其缓存起来。一般来说，JVM 会将所有的类似“abc”这样的文本字符串，或者字符串常量之类缓存起来。</p>
+<p>看起来很不错是吧？但实际情况估计会让你大跌眼镜。一般使用 Java 6 这种历史版本，并不推荐大量使用 intern，为什么呢？魔鬼存在于细节中，被缓存的字符串是存在所谓 PermGen 里的，也就是臭名昭著的“永久代”，这个空间是很有限的，也基本不会被 FullGC 之外的垃圾收集照顾到。所以，如果使用不当，OOM 就会光顾。</p>
+<p>在后续版本中，这个缓存被放置在堆中，这样就极大避免了永久代占满的问题，甚至永久代在 JDK 8 中被 MetaSpace（元数据区）替代了。而且，默认缓存大小也在不断地扩大中，从最初的 1009，到 7u40 以后被修改为 60013。你可以使用下面的参数直接打印具体数字，可以拿自己的 JDK 立刻试验一下。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+PrintStringTableStatistics</span><br></pre></td></tr></table></figure>
+
+<p>你也可以使用下面的 JVM 参数手动调整大小，但是绝大部分情况下并不需要调整，除非你确定它的大小已经影响了操作效率。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:StringTableSize=N</span><br></pre></td></tr></table></figure>
+
+<p>Intern 是一种<strong>显式地排重机制</strong>，但是它也有一定的副作用，因为需要开发者写代码时明确调用，一是不方便，每一个都显式调用是非常麻烦的；另外就是我们很难保证效率，应用开发阶段很难清楚地预计字符串的重复情况，有人认为这是一种污染代码的实践。</p>
+<p>幸好在 Oracle JDK 8u20 之后，推出了一个新的特性，也就是 G1 GC 下的字符串排重。<strong>它是通过将相同数据的字符串指向同一份数据来做到的</strong>，是 JVM 底层的改变，并不需要 Java 类库做什么修改。</p>
+<p>注意这个功能目前是默认关闭的，你需要使用下面参数开启，并且记得指定使用 G1 GC：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+UseStringDeduplication</span><br></pre></td></tr></table></figure>
+
+<p>前面说到的几个方面，只是 Java 底层对字符串各种优化的一角，在运行时，字符串的一些基础操作会直接利用 JVM 内部的 Intrinsic 机制，往往运行的就是特殊优化的本地代码，而根本就不是 Java 代码生成的字节码。Intrinsic 可以简单理解为，是一种利用 native 方式 hard-coded 的逻辑，算是一种特别的内联，很多优化还是需要直接使用特定的 CPU 指令，具体可以看相关源码，搜索“string”以查找相关 Intrinsic 定义。当然，你也可以在启动实验应用时，使用下面参数，了解 intrinsic 发生的状态。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-XX:+PrintCompilation -XX:+UnlockDiagnosticVMOptions -XX:+PrintInlining</span><br><span class="line">    //样例输出片段    </span><br><span class="line">        180    3       3       java.lang.String::charAt (25 bytes)  </span><br><span class="line">                                  @ 1   java.lang.String::isLatin1 (19 bytes)   </span><br><span class="line">                                  ...  </span><br><span class="line">                                  @ 7 java.lang.StringUTF16::getChar (60 bytes) intrinsic</span><br></pre></td></tr></table></figure>
 
 
 
+<h2 id="三、String自身的演化"><a href="#三、String自身的演化" class="headerlink" title="三、String自身的演化"></a>三、String自身的演化</h2><p>如果你仔细观察过 Java 的字符串，在历史版本中，它是使用 char 数组来存数据的，这样非常直接。但是 Java 中的 char 是两个 bytes 大小，拉丁语系语言的字符，根本就不需要太宽的 char，这样无区别的实现就造成了一定的浪费。<strong>密度是编程语言平台永恒的话题</strong>，因为归根结底绝大部分任务是要来操作数据的。</p>
+<p>其实在 Java 6 的时候，Oracle JDK 就提供了压缩字符串的特性，但是这个特性的实现并不是开源的，而且在实践中也暴露出了一些问题，所以在最新的 JDK 版本中已经将它移除了。</p>
+<p>在 Java 9 中，我们引入了 Compact Strings 的设计，对字符串进行了大刀阔斧的改进。<strong>将数据存储方式从 char 数组，改变为一个 byte 数组加上一个标识编码的所谓 coder，并且将相关字符串操作类都进行了修改。</strong>另外，所有相关的 Intrinsic 之类也都进行了重写，以保证没有任何性能损失。</p>
+<p>虽然底层实现发生了这么大的改变，但是 Java 字符串的行为并没有任何大的变化，所以这个特性对于绝大部分应用来说是透明的，绝大部分情况不需要修改已有代码。</p>
+<p>当然，在极端情况下，字符串也出现了一些能力退化，比如最大字符串的大小。你可以思考下，原来 char 数组的实现，字符串的最大长度就是数组本身的长度限制，但是替换成 byte 数组，同样数组长度下，存储能力是退化了一倍的！还好这是存在于理论中的极限，还没有发现现实应用受此影响。</p>
+<p>在通用的性能测试和产品实验中，我们能非常明显地看到<strong>紧凑字符串</strong>带来的优势，即<strong>更小的内存占用、更快的操作速度。</strong></p>
 
-<h1 id="问题二：运行时异常与一般异常有什么区别？"><a href="#问题二：运行时异常与一般异常有什么区别？" class="headerlink" title="问题二：运行时异常与一般异常有什么区别？"></a>问题二：运行时异常与一般异常有什么区别？</h1>
       
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -218,10 +306,6 @@
 			 
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">异常</a>
         		</li>
       		
 		</ul>
@@ -241,16 +325,84 @@
 
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/08/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/2.0%20Exception%E5%92%8CError%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/02/13/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/5-String%E3%80%81StringBuffer%E3%80%81StringBuilder%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2020/02/14/6-%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%98%AF%E5%9F%BA%E4%BA%8E%E4%BB%80%E4%B9%88%E5%8E%9F%E7%90%86%EF%BC%9F/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          6 | 动态代理是基于什么原理？
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/02/13/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/4-%E5%BC%BA%E5%BC%95%E7%94%A8%E3%80%81%E8%BD%AF%E5%BC%95%E7%94%A8%E3%80%81%E5%BC%B1%E5%BC%95%E7%94%A8%E3%80%81%E5%B9%BB%E8%B1%A1%E5%BC%95%E7%94%A8%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">4 | 强引用、软引用、弱引用、幻象引用有什么区别？</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -265,916 +417,32 @@
         </div>
         
         
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-数学/程序员应该怎么学数学" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/07/%E6%95%B0%E5%AD%A6/%E7%A8%8B%E5%BA%8F%E5%91%98%E5%BA%94%E8%AF%A5%E6%80%8E%E4%B9%88%E5%AD%A6%E6%95%B0%E5%AD%A6/">程序员应该怎么学数学?</a>
-    </h1>
-  
-
-        
-        <a href="/2020/02/07/%E6%95%B0%E5%AD%A6/%E7%A8%8B%E5%BA%8F%E5%91%98%E5%BA%94%E8%AF%A5%E6%80%8E%E4%B9%88%E5%AD%A6%E6%95%B0%E5%AD%A6/" class="archive-article-date">
-  	<time datetime="2020-02-07T07:30:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="几个观点"><a href="#几个观点" class="headerlink" title="几个观点"></a>几个观点</h1><h2 id="观点一、三阶段"><a href="#观点一、三阶段" class="headerlink" title="观点一、三阶段"></a>观点一、三阶段</h2><p>了解一个新技术有三个阶段，</p>
-<ol>
-<li>第一阶段是，怎么使用；</li>
-<li>第二阶段是，如何实现，原理是什么；</li>
-<li>第三阶段是，为什么这样实现。</li>
-</ol>
-<p>学数学和学一门新技术一样，也有这样三个阶段，<strong>先用起来，了解原理，然后了解为什么。</strong>用一句话来说，我们<u>不能为了数学而学数学，学数学要和具体的应用结合在一起</u>。</p>
-<hr>
-<h2 id="观点二、先广度，再深度"><a href="#观点二、先广度，再深度" class="headerlink" title="观点二、先广度，再深度"></a>观点二、先广度，再深度</h2><p>譬如说，过去几年火起来的深度学习，以及之前没那么火，但是实际上早早就在搜索、广告这些领域，应用的机器学习和推荐算法。这里面其实就是结合了微积分、线性代数、概率论之后的最优化问题。</p>
-<p>事实上，大部分应用领域的核心解决方案，都是把应用领域的问题，形式化为一个个数学问题。在找到数学问题的“解法”之后，用写程序的方式翻译成实际应用的“算法”。而能够应用“数学”的方式来解决问题，是从一个只能套用现成方案的“码农”，向能够将新问题形式化、并找出创新解决方案的“研发工程师”迈出的第一步。</p>
-<p>建议<strong>从工作相关的领域开始，先广度，再深度。</strong></p>
-<p><strong>先广度：</strong>从工作相关的领域开始，是让自己一是能有实际用得上学到的知识的机会，二是日常工作中容易耳濡目染，相当于常常在复习。而先有广度，是让自己在心中有一个问题到解决方法的“地图”，遇到具体的问题能够对得上，容易获得正反馈；然后<strong>再深度</strong>，具体去对一个特定的主题学习应用。</p>
-<p>介绍一个有程序员特色的学习方法，<strong>针对学习的内容写一点程序</strong>。把正在学习的问题的解法，写一个算法实现出来。这是一个非常有效的练习方式。譬如学习线性代数，理解仿射，反复读书的效率对我来说，就不如找来 Coding The Matrix，通过写程序，让学习、理解变得更深入。</p>
-<h2 id="观点三、“数学是工具而非问题，是手段而非目的”"><a href="#观点三、“数学是工具而非问题，是手段而非目的”" class="headerlink" title="观点三、“数学是工具而非问题，是手段而非目的”"></a>观点三、“数学是工具而非问题，是手段而非目的”</h2><p>在数学的学习中，首要的问题是<strong>明确需求</strong>。作为非数学专业出身的“外行”，我们使用数学的目的不是顶天，而是立地；不是上下求索艰深的理论问题，而是将生活中的具体问题抽象化，进而加以解决。</p>
-<p>因此，对于我们这些票友来说，学习数学的基础在于经验而非哲学，比较实际的思路是<strong>秉持功利主义的原则，用多少学多少。</strong>掌握基本的线性代数与矩阵论、概率论与数理统计知识足以应付日常的使用，盲目地好高骛远通常有害无益。理论化和公理化这些比较深邃的尝试固然让人着迷，但它们可能并没有肉眼可见的实用性，对于绝大部分计算机从业者恐怕过于阳春白雪。</p>
-<p>其次，在学习时还要<strong>理解数学的本质</strong>。数学是工具而非问题，是手段而非目的。探索世界奥秘的学科是“格物穷理”的物理学，相形之下，数学更像是个任人打扮的小姑娘，它存在的意义就是通过合理的设计简化物理学的研究。</p>
-<p>理解数学的工具属性就会自然而然地引出了数学学习中的另一个关键点，那就是工具设计的出发点，也就是所谓的<strong>数学思想与数学逻辑</strong>。</p>
-<p>任何一个工具都不是平白无故地设计出来的，它必然要解决某个特定的问题，比如线性代数与矩阵论是对具体对象的抽象表示与运算，比如概率论和数理统计是对不确定性及其定型定量表示的建模。因此，在掌握每一种数学工具的微观技巧之前，理解它们的宏观目标是更加重要的。只有掌握了工具诞生的背景与目的，才有可能有效地使用它们。</p>
-<p>学习时值得突出强调的一点是举一反三的能力。同一种工具及其背后的思想可以出现在不同的场景下，解决不同的问题，但是一旦深入到本质层面，就会发现它们实际上是相通的。如何透过现象看本质，将不同场景融会贯通，才是值得锻炼的高级能力。</p>
-<p>即使是不同的学科，使用的数学基础也有着千丝万缕的联系，将基本的数学概念和充分的想象力结合起来，触类旁通就变得轻而易举。</p>
-<ul>
-<li>把握数学的工具属性</li>
-<li>学习具体方法时先溯因再求果</li>
-<li>勤于思考解决相同问题的不同方法，与解决不同问题的相同方法之间的联系与区别</li>
-</ul>
-<p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gbnw6c1b4tj31400u07l3.jpg" alt=""></p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
-<li>死磕：这是一种精神</li>
-<li>实践：有目的的使用，刻意练习</li>
-<li>反思：举一反三，串联知识</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">数学</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">geektime</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/数学//" class="article-tag-list-link color3">数学</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/07/%E6%95%B0%E5%AD%A6/%E7%A8%8B%E5%BA%8F%E5%91%98%E5%BA%94%E8%AF%A5%E6%80%8E%E4%B9%88%E5%AD%A6%E6%95%B0%E5%AD%A6/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#典型回答"><span class="toc-number">1.</span> <span class="toc-text">典型回答</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#应用场景"><span class="toc-number">2.</span> <span class="toc-text">应用场景</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#扩展回答"><span class="toc-number">3.</span> <span class="toc-text">扩展回答</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、字符串设计和实现考量"><span class="toc-number">3.1.</span> <span class="toc-text">一、字符串设计和实现考量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、字符串缓存"><span class="toc-number">3.2.</span> <span class="toc-text">二、字符串缓存</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、String自身的演化"><span class="toc-number">3.3.</span> <span class="toc-text">三、String自身的演化</span></a></li></ol></li></ol>
+                    </div>
+                </span>
             </div>
         </div>
         
-        
     </div>
 </aside>
 
 
 
-
-  
-    <article id="post-数学/程序员为什么需要学好数学" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/07/%E6%95%B0%E5%AD%A6/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%AD%A6%E5%A5%BD%E6%95%B0%E5%AD%A6/">程序员为什么需要学好数学?</a>
-    </h1>
-  
-
-        
-        <a href="/2020/02/07/%E6%95%B0%E5%AD%A6/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%AD%A6%E5%A5%BD%E6%95%B0%E5%AD%A6/" class="archive-article-date">
-  	<time datetime="2020-02-07T06:37:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="数学的重要性"><a href="#数学的重要性" class="headerlink" title="数学的重要性"></a>数学的重要性</h1><p>数学学得好不好，将会直接决定一个程序员有没有发展潜力。</p>
-<p>因为往大了说，<strong>数学它其实是一种思维模式，考验的是一个人归纳、总结和抽象的能力</strong>。把这个能力放到程序员的世界里，其实就是解决问题的能力。</p>
-<p>往小了说，不管是数据结构与算法还是程序设计，其实底层很多原理或者思路都是源自于数学。</p>
-<p>如果编程语言是血肉，数学的思想和知识就是灵魂。它可以帮助你选择合适的数据结构和算法、提升系统效率、并且赋予机器智慧。尤其是在大数据和智能化的时代，更是如此。</p>
-<h1 id="程序员学习数学的目的"><a href="#程序员学习数学的目的" class="headerlink" title="程序员学习数学的目的"></a>程序员学习数学的目的</h1><p>目标：只学习程序员需要的数学知识：如数学归纳法、迭代法、递归、排列、组合等等。</p>
-<p>比如对于朴素贝叶斯方法，从基本的随机现象、随机变量和概率分布等着手。随后，逐步深入，结合这些数学知识在编程算法中的应用进行展开。比方说，贝叶斯定理是什么，随机变量之间的独立性是什么，这些是如何构成朴素贝叶斯方法的，而最终朴素贝叶斯又是如何被运用在机器学习的分类算法之中的。</p>
-<p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gbnuo0cu3wj30vq0ns41z.jpg" alt="img"></p>
-<p>数学思想是启发我们思维的中枢，如果你对数学有更好的理解，遇到问题的时候就能追本溯源，快、准、稳地找到解决方案。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">数学</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">geektime</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/数学//" class="article-tag-list-link color3">数学</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/07/%E6%95%B0%E5%AD%A6/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%AD%A6%E5%A5%BD%E6%95%B0%E5%AD%A6/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Java/java核心技术面试/1.对Java平台的理解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/06/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/1.%E5%AF%B9Java%E5%B9%B3%E5%8F%B0%E7%9A%84%E7%90%86%E8%A7%A3/">1.0 对Java平台的理解</a>
-    </h1>
-  
-
-        
-        <a href="/2020/02/06/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/1.%E5%AF%B9Java%E5%B9%B3%E5%8F%B0%E7%9A%84%E7%90%86%E8%A7%A3/" class="archive-article-date">
-  	<time datetime="2020-02-06T10:00:28.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="问题：“Java-是解释执行的”这句话对吗？—不完全正确"><a href="#问题：“Java-是解释执行的”这句话对吗？—不完全正确" class="headerlink" title="问题：“Java 是解释执行的”这句话对吗？—不完全正确"></a>问题：“Java 是解释执行的”这句话对吗？—不完全正确</h1><h3 id="Java-本身是一种面向对象的语言，最显著的-特性-有两个方面，"><a href="#Java-本身是一种面向对象的语言，最显著的-特性-有两个方面，" class="headerlink" title="Java 本身是一种面向对象的语言，最显著的==特性==有两个方面，"></a>Java 本身是一种面向对象的语言，最显著的<strong>==特性==</strong>有两个方面，</h3><ol>
-<li>一是所谓的<strong>“书写一次，到处运行”</strong>（Write once, run anywhere），能够非常容易地获得==<strong>跨平台</strong>==能力；</li>
-<li>另外就是<strong>==垃圾收集（GC, Garbage Collection）==</strong>，Java 通过垃圾收集器（Garbage Collector）回收分配内存，大部分情况下，程序员不需要自己操心内存的分配和回收。</li>
-</ol>
-<h3 id="Java代码的执行流程"><a href="#Java代码的执行流程" class="headerlink" title="Java代码的执行流程"></a>Java代码的执行流程</h3><ol>
-<li>我们开发的 Java 的源代码，</li>
-<li>首先通过 Javac 编译成为.class字节码（bytecode），</li>
-<li>然后，<u>在运行时</u>，通过 Java 虚拟机（JVM）内嵌的==<u><strong>解释</strong>器</u>==将字节码转换成为最终目标机器码。</li>
-</ol>
-<p>但是常见的 JVM，比如我们大多数情况使用的 Oracle JDK 提供的 Hotspot JVM，都提供了 <strong>JIT（Just-In-Time）即时编译器</strong>，也就是通常所说的<strong>==动态编译器==</strong>，JIT 能够在运行时将热点代码<strong>==编译==</strong>成机器码，这种情况下部分热点代码就属于编译执行，而不是解释执行了。</p>
-<h4 id="众所周知，我们通常把-Java-分为编译期和运行时。"><a href="#众所周知，我们通常把-Java-分为编译期和运行时。" class="headerlink" title="众所周知，我们通常把 Java 分为编译期和运行时。"></a>众所周知，我们通常把 Java 分为<strong>编译期</strong>和<strong>运行时</strong>。</h4><h5 id="编译期："><a href="#编译期：" class="headerlink" title="编译期："></a>编译期：</h5><p>这里说的 Java 的编译和 C/C++ 是有着不同的意义的，<strong>Javac 的编译，编译 Java 源码生成“.class”文件里面实际是字节码，而不是可以直接执行的机器码。</strong>Java 通过字节码和 Java 虚拟机（JVM）这种跨平台的抽象，屏蔽了操作系统和硬件的细节，这也是实现“一次编译，到处执行”的基础。</p>
-<h5 id="在运行时："><a href="#在运行时：" class="headerlink" title="在运行时："></a>在运行时：</h5><p>JVM 会通过<strong>类加载器（Class-Loader）</strong>加载字节码，解释或者编译执行。</p>
-<p>就像前面前面提到的，主流 Java 版本中，<strong>如 JDK 8 实际是解释和编译混合的一种模式，即所谓的<u>混合模式（-Xmixed）</u></strong>。</p>
-<p>通常运行在 server 模式的 JVM，会进行上万次调用以收集足够的信息进行高效的编译，client 模式这个门限是 1500 次。Oracle Hotspot JVM 内置了两个不同的 JIT compiler，</p>
-<ul>
-<li><p>C1 对应前面说的 client 模式，适用于对于启动速度敏感的应用，比如普通 Java 桌面应用；</p>
-</li>
-<li><p>C2 对应 server 模式，它的优化是为长时间运行的服务器端应用设计的。默认是采用所谓的分层编译（TieredCompilation）。</p>
-</li>
-</ul>
-<p>Java 虚拟机启动时，可以指定不同的参数对运行模式进行选择。 </p>
-<ul>
-<li><p>比如，指定<u>“-Xint”</u>，就是告诉 JVM 只进行解释执行，不对代码进行编译，这种模式抛弃了 JIT 可能带来的性能优势。<strong>毕竟解释器（interpreter）是逐条读入，逐条解释运行的</strong>。</p>
-</li>
-<li><p>与其相对应的，还有一个“<u>-Xcomp”</u>参数，这是告诉 JVM 关闭解释器，不要进行解释执行，或者叫作最大优化级别。那你可能会问这种模式是不是最高效啊？简单说，还真未必。“-Xcomp”会导致 JVM 启动变慢非常多，同时有些 JIT 编译器优化方式，比如分支预测，如果不进行 profiling，往往并不能进行有效优化。</p>
-</li>
-</ul>
-<p>除了我们日常最常见的 Java 使用模式，其实还有一种新的编译方式，即所谓的 <strong>AOT（Ahead-of-Time Compilation），直接将字节码编译成机器代码</strong>，这样就避免了 JIT 预热等各方面的开销，比如 Oracle JDK 9 就引入了实验性的 AOT 特性，并且增加了新的 <strong>jaotc 工具</strong>。利用下面的命令把某个类或者某个模块编译成为 AOT 库。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jaotc --output libHelloWorld.so HelloWorld.classjaotc --output libjava.base.so --module java.base</span><br></pre></td></tr></table></figure>
-
-<p>然后，在启动时直接指定就可以了。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -XX:AOTLibrary=./libHelloWorld.so,./libjava.base.so HelloWorld</span><br></pre></td></tr></table></figure>
-
-
-
-<p>而且，Oracle JDK 支持分层编译和 AOT 协作使用，这两者并不是二选一的关系。如果你有兴趣，可以参考<a href="http://openjdk.java.net/jeps/295" target="_blank" rel="noopener">相关文档</a>。AOT 也不仅仅是只有这一种方式，业界早就有第三方工具（如 GCJ、Excelsior JET）提供相关功能。</p>
-<p>另外，JVM 作为一个强大的平台，不仅仅只有 Java 语言可以运行在 JVM 上，本质上合规的字节码都可以运行，Java 语言自身也为此提供了便利，我们可以看到类似 Clojure、Scala、Groovy、JRuby、Jython 等大量 JVM 语言，活跃在不同的场景。</p>
-<h1 id="问题：谈谈对-java平台的理解"><a href="#问题：谈谈对-java平台的理解" class="headerlink" title="问题：谈谈对 java平台的理解"></a>问题：谈谈对 java平台的理解</h1><p>对于 Java 平台的理解，可以从很多方面简明扼要地谈一下，例如：</p>
-<ol>
-<li><p>Java 的<strong>语言特性</strong>，包括泛型、Lambda 等语言特性；</p>
-</li>
-<li><p><strong>基础类库</strong>，包括集合、IO/NIO、网络、并发、安全等基础类库。对于我们日常工作应用较多的类库，面试前可以系统化总结一下，有助于临场发挥。</p>
-</li>
-<li><p><strong>JVM 的一些基础概念和机制</strong>，比如 Java 的<strong>类加载机制</strong>，常用版本 JDK（如 JDK 8）内嵌的 Class-Loader，例如 Bootstrap、 Application 和 Extension Class-loader；<strong>==类加载大致过程：加载、验证、链接、初始化==</strong>；自定义 Class-Loader 等。还有<strong>垃圾收集的基本原理，最常见的垃圾收集器</strong>，如 SerialGC、Parallel GC、 CMS、 G1 等，对于适用于什么样的工作负载最好也心里有数。</p>
-</li>
-<li><p>JDK 包含哪些工具或者 Java 领域内其他工具等，如编译器、运行时环境、安全工具、诊断和监控工具等。这些基本工具是日常工作效率的保证，对于我们工作在其他语言平台上，同样有所帮助，很多都是触类旁通的。</p>
-</li>
-</ol>
-<p><img src="https://static001.geekbang.org/resource/image/20/32/20bc6a900fc0b829c2f0e723df050732.png" alt=""></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">面试</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java/java基础//" class="article-tag-list-link color2">java基础</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java/java基础/java面试//" class="article-tag-list-link color2">java面试</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/06/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/1.%E5%AF%B9Java%E5%B9%B3%E5%8F%B0%E7%9A%84%E7%90%86%E8%A7%A3/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-日程安排/2020年实习准备" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/06/%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92/2020%E5%B9%B4%E5%AE%9E%E4%B9%A0%E5%87%86%E5%A4%87/">2020年实习准备</a>
-    </h1>
-  
-
-        
-        <a href="/2020/02/06/%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92/2020%E5%B9%B4%E5%AE%9E%E4%B9%A0%E5%87%86%E5%A4%87/" class="archive-article-date">
-  	<time datetime="2020-02-06T05:38:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="总任务"><a href="#总任务" class="headerlink" title="总任务"></a>总任务</h1><table>
-<thead>
-<tr>
-<th align="center">任务名称</th>
-<th align="center">计划完成时间</th>
-<th align="center">备注</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">算法面试通关40讲——极客时间</td>
-<td align="center">62个视频</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">leetcode面试200题</td>
-<td align="center">19/200</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">Java核心技术面试精讲</td>
-<td align="center">43讲</td>
-<td align="center">3/43</td>
-</tr>
-<tr>
-<td align="center">MyBatis</td>
-<td align="center">4天</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">SpringMvc</td>
-<td align="center">3天</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">Spring</td>
-<td align="center">4天</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">SpringBoot</td>
-<td align="center">4天</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">vue.js</td>
-<td align="center">1天</td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">《牛客网》java面试题</td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-<tr>
-<td align="center">工程实践项目</td>
-<td align="center"></td>
-<td align="center"></td>
-</tr>
-</tbody></table>
-<h1 id="任务拆解"><a href="#任务拆解" class="headerlink" title="任务拆解"></a>任务拆解</h1><h2 id="算法面试通关40讲"><a href="#算法面试通关40讲" class="headerlink" title="算法面试通关40讲"></a>算法面试通关40讲</h2><table>
-<thead>
-<tr>
-<th>完成</th>
-<th>时间</th>
-<th>备注</th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<h2 id="Java核心技术面试精讲"><a href="#Java核心技术面试精讲" class="headerlink" title="Java核心技术面试精讲"></a>Java核心技术面试精讲</h2><table>
-<thead>
-<tr>
-<th>时间</th>
-<th>完成</th>
-<th>备注</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>2020.2.8</td>
-<td>3/43</td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<h2 id="MyBatis"><a href="#MyBatis" class="headerlink" title="MyBatis"></a>MyBatis</h2><table>
-<thead>
-<tr>
-<th>任务</th>
-<th>计划时间</th>
-<th>实际完成完成</th>
-<th>备注</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>day01–整理笔记</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>day02–整理笔记</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>day03–整理笔记</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>day04–整理笔记</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<h2 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h2><table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<h2 id="SpringMvc"><a href="#SpringMvc" class="headerlink" title="SpringMvc"></a>SpringMvc</h2><table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<h2 id="SpringBoot"><a href="#SpringBoot" class="headerlink" title="SpringBoot"></a>SpringBoot</h2><table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<h2 id="vue-js"><a href="#vue-js" class="headerlink" title="vue.js"></a>vue.js</h2><table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<h2 id="《牛客网》java面试题"><a href="#《牛客网》java面试题" class="headerlink" title="《牛客网》java面试题"></a>《牛客网》java面试题</h2><table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<h2 id="工程实践项目"><a href="#工程实践项目" class="headerlink" title="工程实践项目"></a>工程实践项目</h2>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">日程计划</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/日程计划//" class="article-tag-list-link color5">日程计划</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/06/%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92/2020%E5%B9%B4%E5%AE%9E%E4%B9%A0%E5%87%86%E5%A4%87/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-leetcode/98.验证二叉搜索树" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/06/leetcode/98.%E9%AA%8C%E8%AF%81%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91/">98.验证二叉搜索树</a>
-    </h1>
-  
-
-        
-        <a href="/2020/02/06/leetcode/98.%E9%AA%8C%E8%AF%81%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91/" class="archive-article-date">
-  	<time datetime="2020-02-06T02:40:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h1><p>链接：<a href="https://leetcode-cn.com/problems/validate-binary-search-tree" target="_blank" rel="noopener">https://leetcode-cn.com/problems/validate-binary-search-tree</a></p>
-<hr>
-<img src="../assets/img/leetcode/98.png" style="zoom:50%;" />
-
-
-<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">leetcode</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/数据结构与算法//" class="article-tag-list-link color3">数据结构与算法</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/数据结构与算法/leetcode//" class="article-tag-list-link color4">leetcode</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/06/leetcode/98.%E9%AA%8C%E8%AF%81%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/05/hello-world/">hello hexo</a>
-    </h1>
-  
-
-        
-        <a href="/2020/02/05/hello-world/" class="archive-article-date">
-  	<time datetime="2020-02-05T12:27:51.529Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-05</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">hexo</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">随笔</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/前端//" class="article-tag-list-link color3">前端</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/05/hello-world/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
   
   
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
-    </nav>
+  
+
+  
+
+  
+
   
 
 
@@ -1197,8 +465,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
