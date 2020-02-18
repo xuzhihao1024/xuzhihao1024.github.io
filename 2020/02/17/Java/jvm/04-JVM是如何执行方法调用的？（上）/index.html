@@ -6,14 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2020/2 | xuzhihao的博客</title>
+  <title>04-JVM是如何执行方法调用的？（上） | xuzhihao的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="xuzhihao的博客">
-<meta property="og:url" content="http://yoursite.com/archives/2020/02/index.html">
+  <meta name="description" content="0.引例请看下面的一段代码，展示了一个可变长参数的坑。或许已经猜到了，它正是可变长参数方法的重载造成的。  （注：官方文档建议避免重载可变长参数方法，见[1]的最后一段。）  1234567891011121314&#x2F;&#x2F;某个 API 定义了两个同名的重载方法&#x2F;&#x2F;接收一个 Object，以及声明为 Object…的变长参数void invoke(Object obj, Object... args)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="04-JVM是如何执行方法调用的？（上）">
+<meta property="og:url" content="http://yoursite.com/2020/02/17/Java/jvm/04-JVM%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8%E7%9A%84%EF%BC%9F%EF%BC%88%E4%B8%8A%EF%BC%89/index.html">
 <meta property="og:site_name" content="xuzhihao的博客">
+<meta property="og:description" content="0.引例请看下面的一段代码，展示了一个可变长参数的坑。或许已经猜到了，它正是可变长参数方法的重载造成的。  （注：官方文档建议避免重载可变长参数方法，见[1]的最后一段。）  1234567891011121314&#x2F;&#x2F;某个 API 定义了两个同名的重载方法&#x2F;&#x2F;接收一个 Object，以及声明为 Object…的变长参数void invoke(Object obj, Object... args)">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-02-17T03:57:35.000Z">
+<meta property="article:modified_time" content="2020-02-18T01:48:44.187Z">
 <meta property="article:author" content="Jason Xu">
+<meta property="article:tag" content="jvm">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="xuzhihao的博客" type="application/atom+xml">
@@ -152,36 +157,176 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-Java/jvm/04-JVM是如何执行方法调用的？（上）" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      04-JVM是如何执行方法调用的？（上）
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/02/17/Java/jvm/04-JVM%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8%E7%9A%84%EF%BC%9F%EF%BC%88%E4%B8%8A%EF%BC%89/" class="archive-article-date">
+
+        
+        <a href="/2020/02/17/Java/jvm/04-JVM%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8%E7%9A%84%EF%BC%9F%EF%BC%88%E4%B8%8A%EF%BC%89/" class="archive-article-date">
   	<time datetime="2020-02-17T03:57:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-17</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/02/17/Java/jvm/04-JVM%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8%E7%9A%84%EF%BC%9F%EF%BC%88%E4%B8%8A%EF%BC%89/">04-JVM是如何执行方法调用的？（上）</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="0-引例"><a href="#0-引例" class="headerlink" title="0.引例"></a>0.引例</h1><p>请看下面的一段代码，展示了一个可变长参数的坑。或许已经猜到了，它正是可变长参数方法的重载造成的。</p>
+<blockquote>
+<p>（注：官方文档建议避免重载可变长参数方法，见<a href="https://docs.oracle.com/javase/8/docs/technotes/guides/language/varargs.html" target="_blank" rel="noopener">[1]</a>的最后一段。）</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//某个 API 定义了两个同名的重载方法</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//接收一个 Object，以及声明为 Object…的变长参数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">invoke</span><span class="params">(Object obj, Object... args)</span> </span>&#123; ... &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//接收一个 String、一个 Object，以及声明为 Object…的变长参数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">invoke</span><span class="params">(String s, Object obj, Object... args)</span> </span>&#123; ... &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//如果想调用第一个方法，传入的参数为(null,1)。也就是说，声明为Object的形式参数所对应的实际参数为 null，而变长参数则对应 1。</span></span><br><span class="line">invoke(<span class="keyword">null</span>, <span class="number">1</span>);    <span class="comment">// 结果调用第二个invoke方法</span></span><br><span class="line"></span><br><span class="line">invoke(<span class="keyword">null</span>, <span class="number">1</span>, <span class="number">2</span>); <span class="comment">// 结果调用第二个invoke方法</span></span><br><span class="line">invoke(<span class="keyword">null</span>, <span class="keyword">new</span> Object[]&#123;<span class="number">1</span>&#125;); <span class="comment">// 只有手动绕开可变长参数的语法糖，</span></span><br><span class="line">                               <span class="comment">// 才能调用第一个invoke方法</span></span><br></pre></td></tr></table></figure>
 
-        <div class="article-info info-on-right">
-          
+<p>通常来说，之所以<strong>不提倡可变长参数方法的重载</strong>，是因为 Java 编译器可能无法决定应该调用哪个目标方法。</p>
+<p>在这种情况下，编译器会报错，并且提示这个方法调用有二义性。</p>
+<p>然而，Java 编译器直接将我的方法调用识别为调用第二个方法，这究竟是为什么呢？带着这个问题，我们来看一看 Java 虚拟机是怎么识别目标方法的。</p>
+<h1 id="1-重载与重写"><a href="#1-重载与重写" class="headerlink" title="1.重载与重写"></a>1.重载与重写</h1><p>在 Java 中，方法存在重载以及重写的概念，重载指的是方法名相同而参数类型不相同的方法之间的关系，重写指的是方法名相同并且参数类型也相同的方法之间的关系。</p>
+<p>Java 虚拟机识别方法的方式略有不同，除了方法名和参数类型之外，它还会考虑返回类型。</p>
+<h2 id="1-1重载"><a href="#1-1重载" class="headerlink" title="1.1重载"></a>1.1重载</h2><p>在 Java 程序里，如果同一个类中出现多个名字相同，并且参数类型相同的方法，那么它无法通过编译。</p>
+<p>也就是说，在正常情况下，如果我们想要在同一个类中定义名字相同的方法，那么它们的参数类型必须不同。这些方法之间的关系，我们称之为<strong>重载</strong>。</p>
+<blockquote>
+<p>小知识：这个限制可以通过字节码工具绕开。也就是说，在编译完成之后，我们可以再向class文件中添加方法名和参数类型相同，<u>而返回类型不同的方法</u>。</p>
+<p>当这种包括多个方法名相同、参数类型相同，而返回类型不同的方法的类，出现在Java编译器的用户类路径上时，它是怎么确定需要调用哪个方法的呢？</p>
+<p>当前版本的Java编译器会<strong>直接选取第一个方法名以及参数类型匹配的方法</strong>。并且，它会根据所选取方法的返回类型来决定可不可以通过编译，以及需不需要进行值转换等。</p>
+</blockquote>
+<p>重载的方法在<strong>编译过程</strong>中即可完成识别。</p>
+<h3 id="1-1-1重载方法选取过程的三阶段"><a href="#1-1-1重载方法选取过程的三阶段" class="headerlink" title="1.1.1重载方法选取过程的三阶段"></a>1.1.1重载方法选取过程的三阶段</h3><p>具体到每一个方法调用，Java 编译器会根据所传入参数的<strong>声明类型</strong>（注意与实际类型区分）来选取重载方法。</p>
+<p>选取的过程共分为三个阶段：</p>
+<ol>
+<li>在不考虑对基本类型自动装拆箱（auto-boxing，auto-unboxing），以及可变长参数的情况下选取重载方法；</li>
+<li>如果在第 1 个阶段中没有找到适配的方法，那么在允许自动装拆箱，但不允许可变长参数的情况下选取重载方法；</li>
+<li>如果在第 2 个阶段中没有找到适配的方法，那么在允许自动装拆箱以及可变长参数的情况下选取重载方法。</li>
+</ol>
+<h3 id="1-1-2形式参数类型的继承关系规则"><a href="#1-1-2形式参数类型的继承关系规则" class="headerlink" title="1.1.2形式参数类型的继承关系规则"></a>1.1.2形式参数类型的继承关系规则</h3><p>如果 Java 编译器在同一个阶段中找到了多个适配的方法，那么它会在其中选择一个最为贴切的，而决定贴切程度的一个关键就是<strong>形式参数类型的继承关系</strong>。</p>
+<blockquote>
+<p>在开头的例子中，当传入 null 时，它既可以匹配第一个方法中声明为 Object 的形式参数，也可以匹配第二个方法中声明为 String 的形式参数。</p>
+<p>由于 String 是 Object 的子类，因此 Java 编译器会认为第二个方法更为贴切。</p>
+</blockquote>
+<h3 id="1-1-3重载也可作用于继承而来的方法"><a href="#1-1-3重载也可作用于继承而来的方法" class="headerlink" title="1.1.3重载也可作用于继承而来的方法"></a>1.1.3重载也可作用于继承而来的方法</h3><p>除了同一个类中的方法，重载也可以作用于这个类所继承而来的方法。</p>
+<p>也就是说，如果子类定义了与父类中非私有方法同名的方法，而且这两个方法的参数类型不同，那么在子类中，这两个方法同样构成了<strong>重载</strong>。</p>
+<h2 id="1-2重写"><a href="#1-2重写" class="headerlink" title="1.2重写"></a>1.2重写</h2><p>那么，如果子类定义了与父类中非私有方法同名的方法，而且这两个方法的参数类型相同，那么这两个方法之间又是什么关系呢？</p>
+<ul>
+<li><p>如果这两个方法都是静态的，那么子类中的方法隐藏了父类中的方法。</p>
+</li>
+<li><p>如果这两个方法都不是静态的，且都不是私有的，那么子类的方法<strong>重写</strong>了父类中的方法。</p>
+</li>
+</ul>
+<p>众所周知，Java 是一门面向对象的编程语言，它的一个重要特性便是<strong>多态</strong>。而方法重写，正是多态最重要的一种体现方式：它允许子类在继承父类部分功能的同时，拥有自己独特的行为。</p>
+<blockquote>
+<p>打个比方，如果你经常漫游，那么你可能知道，拨打 10086 会根据你当前所在地，连接到当地的客服。</p>
+</blockquote>
+<p>重写调用也是如此：它会根据调用者的动态类型，来选取实际的目标方法。</p>
+<h1 id="2-JVM的静态绑定与动态绑定"><a href="#2-JVM的静态绑定与动态绑定" class="headerlink" title="2.JVM的静态绑定与动态绑定"></a>2.JVM的静态绑定与动态绑定</h1><p>在 Java 虚拟机中，静态绑定指的是在解析时便能够直接识别目标方法的情况，而动态绑定则指的是需要在运行过程中根据调用者的动态类型来识别目标方法的情况。由于 Java 编译器已经区分了重载的方法，因此可以认为 Java 虚拟机中不存在重载。</p>
+<h2 id="2-1Java-虚拟机是怎么识别方法的？"><a href="#2-1Java-虚拟机是怎么识别方法的？" class="headerlink" title="2.1Java 虚拟机是怎么识别方法的？"></a>2.1Java 虚拟机是怎么识别方法的？</h2><p>Java 虚拟机识别方法的关键在于</p>
+<ol>
+<li><p>类名</p>
+</li>
+<li><p>方法名</p>
+</li>
+<li><p><strong>方法描述符（method descriptor）</strong>：它是由方法的<strong>参数类型</strong>以及<strong>返回类型</strong>所构成。</p>
+</li>
+</ol>
+<p>在同一个类中，如果同时出现多个名字相同且描述符也相同的方法，那么 Java 虚拟机会在类的验证阶段报错。</p>
+<p>可以看到，<strong>Java 虚拟机与 Java 语言不同</strong>：它并不限制名字与参数类型相同，但返回类型不同的方法出现在同一个类中，对于调用这些方法的字节码来说，由于字节码所附带的方法描述符包含了返回类型，因此 Java 虚拟机能够准确地识别目标方法。</p>
+<p>Java 虚拟机中关于<strong>方法重写的判定</strong>同样基于方法描述符。也就是说，如果子类定义了与父类中非私有、非静态方法同名的方法，那么只有当这两个方法的参数类型以及返回类型一致，Java 虚拟机才会判定为重写。</p>
+<p>对于 Java 语言中重写而 Java 虚拟机中非重写的情况，编译器会通过生成桥接方法<a href="https://docs.oracle.com/javase/tutorial/java/generics/bridgeMethods.html" target="_blank" rel="noopener">[2]</a>来实现 Java 中的重写语义。</p>
+<p>由于对重载方法的区分在编译阶段已经完成，我们可以认为 Java 虚拟机不存在重载这一概念。</p>
+<p>因此，在某些文章中：</p>
+<ul>
+<li><p><strong>重载</strong>也被称为<strong>静态绑定（static binding）</strong>，或者<strong>编译时多态（compile-time polymorphism）</strong>；</p>
+</li>
+<li><p>而<strong>重写</strong>则被称为<strong>动态绑定（dynamic binding）。</strong></p>
+</li>
+</ul>
+<p>这个说法在 Java 虚拟机语境下并非完全正确。这是因为某个类中的重载方法可能被它的子类所重写，<strong>因此 Java 编译器会将所有对非私有实例方法的调用编译为需要动态绑定的类型。</strong></p>
+<p>确切地说，</p>
+<ul>
+<li>Java 虚拟机中的<strong>静态绑定</strong>指的是<strong>在解析时</strong>便能够直接识别目标方法的情况</li>
+<li>而<strong>动态绑定</strong>则指的是需要<strong>在运行过程中根据调用者的动态类型</strong>来识别目标方法的情况。</li>
+</ul>
+<p>具体来说，Java 字节码中与调用相关的指令共有五种。</p>
+<ol>
+<li>invokestatic：用于调用静态方法。</li>
+<li>invokespecial：用于调用私有实例方法、构造器，以及使用 super 关键字调用父类的实例方法或构造器，和所实现接口的默认方法。</li>
+<li>invokevirtual：用于调用非私有实例方法。</li>
+<li>invokeinterface：用于调用接口方法。</li>
+<li>invokedynamic：用于调用动态方法。</li>
+</ol>
+<p>对于 invokestatic 以及 invokespecial 而言，Java 虚拟机能够直接识别具体的目标方法。</p>
+<p>而对于 invokevirtual 以及 invokeinterface 而言，在绝大部分情况下，虚拟机需要在执行过程中，根据调用者的动态类型，来确定具体的目标方法。</p>
+<p>唯一的例外在于，如果虚拟机能够确定目标方法有且仅有一个，比如说目标方法被标记为 final<a href="https://wiki.openjdk.java.net/display/HotSpot/VirtualCalls" target="_blank" rel="noopener">3</a>  <a href="https://wiki.openjdk.java.net/display/HotSpot/InterfaceCalls" target="_blank" rel="noopener">4</a>，那么它可以不通过动态类型，直接确定目标方法。</p>
+<p>具体例子如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> 客户 </span>&#123;</span><br><span class="line">  <span class="comment">//定义了一个接口方法，叫“isVIP”。</span></span><br><span class="line">  <span class="function"><span class="keyword">boolean</span> <span class="title">isVIP</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> 商户 </span>&#123;</span><br><span class="line">  <span class="comment">//定义了一个成员方法，叫做“折后价格”，它将接收一个double类型的参数，以及一个“客户”类型的参数。</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">double</span> 折后价格(<span class="keyword">double</span> 原价, 客户 某客户) &#123;</span><br><span class="line">    <span class="keyword">return</span> 原价 * <span class="number">0.8</span>d;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">“奸商”类，继承了“商户”类</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> 奸商 <span class="keyword">extends</span> 商户 </span>&#123;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">  重写了“折后价格”这个方法。如果客户是 VIP，那么它会被给到一个更低的折扣。</span></span><br><span class="line"><span class="comment">  在这个方法中，我们首先会调用“客户”接口的”isVIP“方法。该调用会被编译为 invokeinterface 指令。</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">double</span> 折后价格(<span class="keyword">double</span> 原价, 客户 某客户) &#123;</span><br><span class="line">    <span class="keyword">if</span> (某客户.isVIP()) &#123;                         <span class="comment">// invokeinterface      </span></span><br><span class="line">      <span class="keyword">return</span> 原价 * 价格歧视();                    <span class="comment">// invokestatic</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;<span class="comment">//如果客户不是 VIP，那么我们会通过 super 关键字调用父类的“折后价格”方法。该调用会被编译为 invokespecial 指令。</span></span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">super</span>.折后价格(原价, 某客户);          <span class="comment">// invokespecial</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">//如果客户是VIP那么会调用奸商类的一个名叫“价格歧视”的静态方法。该调用会被编译为 invokestatic 指令。</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">double</span> 价格歧视() &#123;</span><br><span class="line">    <span class="comment">//在静态方法“价格歧视”中，我们会调用 Random 类的构造器。该调用会被编译为 invokespecial 指令。</span></span><br><span class="line">    <span class="comment">//然后会以这个新建的Random对象为调用者，调用Random类中的nextDouble方法。该调用会被编译为 invokevirutal 指令。</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Random()                          <span class="comment">// invokespecial</span></span><br><span class="line">           .nextDouble()                         <span class="comment">// invokevirtual</span></span><br><span class="line">           + <span class="number">0.8</span>d;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-调用指令的符号引用"><a href="#3-调用指令的符号引用" class="headerlink" title="3.调用指令的符号引用"></a>3.调用指令的符号引用</h1><blockquote>
+<p>在 class 文件中，Java 编译器会用符号引用指代目标方法。在执行调用指令前，它所附带的符号引用需要被解析成实际引用。对于可以静态绑定的方法调用而言，实际引用为目标方法的指针。对于需要动态绑定的方法调用而言，实际引用为辅助动态绑定的信息。</p>
+</blockquote>
+<p>在编译过程中，我们并不知道目标方法的具体内存地址。因此，Java 编译器会暂时用<strong>符号引用</strong>来表示该目标方法。这一符号引用包括目标方法所在的类或接口的名字，以及目标方法的方法名和方法描述符。</p>
+<p>符号引用存储在 class 文件的常量池之中。根据目标方法是否为接口方法，这些引用可分为<strong>接口符号引用</strong>和<strong>非接口符号引用</strong>。</p>
+<p>下面的例子中，利用“javap -v”打印某个类的常量池。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 在奸商.class的常量池中，<span class="comment">#16为接口符号引用，指向接口方法"客户.isVIP()"。而#22为非接口符号引用，指向静态方法"奸商.价格歧视()"。</span></span><br><span class="line">$ javap -v 奸商.class ...</span><br><span class="line">Constant pool:</span><br><span class="line">...</span><br><span class="line">  <span class="comment">#16 = InterfaceMethodref #27.#29        // 客户.isVIP:()Z</span></span><br><span class="line">...</span><br><span class="line">  <span class="comment">#22 = Methodref          #1.#33         // 奸商.价格歧视:()D</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>在执行使用了符号引用的字节码前，Java 虚拟机需要解析这些符号引用，并替换为实际引用。</p>
+<p>对于非接口符号引用，假定该符号引用所指向的类为 C，则 Java 虚拟机会按照如下步骤进行查找：</p>
+<ol>
+<li>在 C 中查找符合名字及描述符的方法。</li>
+<li>如果没有找到，在 C 的父类中继续搜索，直至 Object 类。</li>
+<li>如果没有找到，在 C 所直接实现或间接实现的接口中搜索，这一步搜索得到的目标方法必须是非私有、非静态的。并且，如果目标方法在间接实现的接口中，则需满足 C 与该接口之间没有其他符合条件的目标方法。如果有多个符合条件的目标方法，则任意返回其中一个。</li>
+</ol>
+<p>从这个解析算法可以看出，<strong>静态方法也可以通过子类来调用</strong>。此外，子类的静态方法会隐藏（注意与重写区分）父类中的同名、同描述符的静态方法。</p>
+<p>对于接口符号引用，假定该符号引用所指向的接口为 I，则 Java 虚拟机会按照如下步骤进行查找：</p>
+<ol>
+<li>在 I 中查找符合名字及描述符的方法。</li>
+<li>如果没有找到，在 Object 类中的公有实例方法中搜索。</li>
+<li>如果没有找到，则在 I 的超接口中搜索。这一步的搜索结果的要求与非接口符号引用步骤 3 的要求一致。</li>
+</ol>
+<p>经过上述的解析步骤之后，符号引用会被解析成实际引用。对于可以静态绑定的方法调用而言，实际引用是一个指向方法的指针。对于需要动态绑定的方法调用而言，实际引用则是一个方法表的索引。</p>
+<h1 id="4-两个生成桥接方法的例子"><a href="#4-两个生成桥接方法的例子" class="headerlink" title="4.两个生成桥接方法的例子"></a>4.两个生成桥接方法的例子</h1><p>可以通过“javap -v”来查看 class 文件所包含的方法。</p>
+<ol>
+<li>重写方法的返回类型不一致：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Customer</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">boolean</span> <span class="title">isVIP</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Merchant</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> Number <span class="title">actionPrice</span><span class="params">(<span class="keyword">double</span> price, Customer customer)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NaiveMerchant</span> <span class="keyword">extends</span> <span class="title">Merchant</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Double <span class="title">actionPrice</span><span class="params">(<span class="keyword">double</span> price, Customer customer)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>范型参数类型造成的方法参数类型不一致：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Customer</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">boolean</span> <span class="title">isVIP</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Merchant</span>&lt;<span class="title">T</span> <span class="keyword">extends</span> <span class="title">Customer</span>&gt; </span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">actionPrice</span><span class="params">(<span class="keyword">double</span> price, T customer)</span> </span>&#123;</span><br><span class="line">      ...</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">VIPOnlyMerchant</span> <span class="keyword">extends</span> <span class="title">Merchant</span>&lt;<span class="title">VIP</span>&gt; </span>&#123;</span><br><span class="line">   <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">actionPrice</span><span class="params">(<span class="keyword">double</span> price, VIP customer)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -193,7 +338,7 @@
 		</ul>
 	</div>
 
-          
+      
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
@@ -206,459 +351,116 @@
 	</div>
 
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/02/17/Java/jvm/04-JVM%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8%E7%9A%84%EF%BC%9F%EF%BC%88%E4%B8%8A%EF%BC%89/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/02/16/Java/jvm/03-Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%98%AF%E5%A6%82%E4%BD%95%E5%8A%A0%E8%BD%BDJava%E7%B1%BB%E7%9A%84/" class="archive-article-date">
-  	<time datetime="2020-02-16T11:39:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-16</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2020/02/16/Java/jvm/03-Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%98%AF%E5%A6%82%E4%BD%95%E5%8A%A0%E8%BD%BDJava%E7%B1%BB%E7%9A%84/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">03-Java虚拟机是如何加载Java类的?</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/02/16/Java/jvm/03-Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%98%AF%E5%A6%82%E4%BD%95%E5%8A%A0%E8%BD%BDJava%E7%B1%BB%E7%9A%84/">03-Java虚拟机是如何加载Java类的?</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">jvm</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0-引例"><span class="toc-number">1.</span> <span class="toc-text">0.引例</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#1-重载与重写"><span class="toc-number">2.</span> <span class="toc-text">1.重载与重写</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1重载"><span class="toc-number">2.1.</span> <span class="toc-text">1.1重载</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-1重载方法选取过程的三阶段"><span class="toc-number">2.1.1.</span> <span class="toc-text">1.1.1重载方法选取过程的三阶段</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-2形式参数类型的继承关系规则"><span class="toc-number">2.1.2.</span> <span class="toc-text">1.1.2形式参数类型的继承关系规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-3重载也可作用于继承而来的方法"><span class="toc-number">2.1.3.</span> <span class="toc-text">1.1.3重载也可作用于继承而来的方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2重写"><span class="toc-number">2.2.</span> <span class="toc-text">1.2重写</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-JVM的静态绑定与动态绑定"><span class="toc-number">3.</span> <span class="toc-text">2.JVM的静态绑定与动态绑定</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1Java-虚拟机是怎么识别方法的？"><span class="toc-number">3.1.</span> <span class="toc-text">2.1Java 虚拟机是怎么识别方法的？</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-调用指令的符号引用"><span class="toc-number">4.</span> <span class="toc-text">3.调用指令的符号引用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-两个生成桥接方法的例子"><span class="toc-number">5.</span> <span class="toc-text">4.两个生成桥接方法的例子</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/02/14/Java/jvm/02-Java%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B/" class="archive-article-date">
-  	<time datetime="2020-02-14T06:26:28.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/02/14/Java/jvm/02-Java%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B/">02 | Java的基本类型</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+    </div>
+</aside>
 
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/02/14/leetcode/69-x-%E7%9A%84%E5%B9%B3%E6%96%B9%E6%A0%B9/" class="archive-article-date">
-  	<time datetime="2020-02-14T02:54:04.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/02/14/leetcode/69-x-%E7%9A%84%E5%B9%B3%E6%96%B9%E6%A0%B9/">69. x 的平方根</a>
-    </h1>
-  
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">数学</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">二分查找</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/02/14/leetcode/22-%E6%8B%AC%E5%8F%B7%E7%94%9F%E6%88%90/" class="archive-article-date">
-  	<time datetime="2020-02-14T02:38:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/02/14/leetcode/22-%E6%8B%AC%E5%8F%B7%E7%94%9F%E6%88%90/">22. 括号生成</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">字符串</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">回溯算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/算法与数据结构//" class="article-tag-list-link color3">算法与数据结构</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/算法与数据结构/leetcode//" class="article-tag-list-link color4">leetcode</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/02/14/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/6-%E8%B0%88%E8%B0%88%E5%8F%91%E5%B0%84%E6%9C%BA%E5%88%B6%EF%BC%9F%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%98%AF%E5%9F%BA%E4%BA%8E%E4%BB%80%E4%B9%88%E5%8E%9F%E7%90%86%EF%BC%9F/" class="archive-article-date">
-  	<time datetime="2020-02-14T02:31:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/02/14/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/6-%E8%B0%88%E8%B0%88%E5%8F%91%E5%B0%84%E6%9C%BA%E5%88%B6%EF%BC%9F%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%98%AF%E5%9F%BA%E4%BA%8E%E4%BB%80%E4%B9%88%E5%8E%9F%E7%90%86%EF%BC%9F/">6 | 谈谈发射机制？动态代理是基于什么原理？</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">反射</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">动态代理</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/02/13/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/5-String%E3%80%81StringBuffer%E3%80%81StringBuilder%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/" class="archive-article-date">
-  	<time datetime="2020-02-13T09:46:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-13</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/02/13/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/5-String%E3%80%81StringBuffer%E3%80%81StringBuilder%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/">5 | String、StringBuffer、StringBuilder有什么区别？</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/02/13/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/4-%E5%BC%BA%E5%BC%95%E7%94%A8%E3%80%81%E8%BD%AF%E5%BC%95%E7%94%A8%E3%80%81%E5%BC%B1%E5%BC%95%E7%94%A8%E3%80%81%E5%B9%BB%E8%B1%A1%E5%BC%95%E7%94%A8%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/" class="archive-article-date">
-  	<time datetime="2020-02-13T03:12:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-13</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/02/13/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/4-%E5%BC%BA%E5%BC%95%E7%94%A8%E3%80%81%E8%BD%AF%E5%BC%95%E7%94%A8%E3%80%81%E5%BC%B1%E5%BC%95%E7%94%A8%E3%80%81%E5%B9%BB%E8%B1%A1%E5%BC%95%E7%94%A8%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/">4 | 强引用、软引用、弱引用、幻象引用有什么区别？</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/02/12/leetcode/leetcode%E5%88%B7%E9%A2%98%E7%9B%AE%E5%BD%95/" class="archive-article-date">
-  	<time datetime="2020-02-12T10:06:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/02/12/leetcode/leetcode%E5%88%B7%E9%A2%98%E7%9B%AE%E5%BD%95/">leetcode刷题目录</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">leetcode</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/leetcode//" class="article-tag-list-link color4">leetcode</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/02/11/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/3-0-%E8%B0%88%E8%B0%88final%E3%80%81finally%E3%80%81-finalize%E6%9C%89%E4%BB%80%E4%B9%88%E4%B8%8D%E5%90%8C%EF%BC%9F/" class="archive-article-date">
-  	<time datetime="2020-02-11T05:45:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-11</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/02/11/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/3-0-%E8%B0%88%E8%B0%88final%E3%80%81finally%E3%80%81-finalize%E6%9C%89%E4%BB%80%E4%B9%88%E4%B8%8D%E5%90%8C%EF%BC%9F/">3.0 | 谈谈final、finally、 finalize有什么不同？</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
   
-    </div></section>
   
 
-    
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/archives/2020/02/page/2/">2</a><a class="page-number" href="/archives/2020/02/page/3/">3</a><a class="extend next" rel="next" href="/archives/2020/02/page/2/">Next &amp;raquo;</a>
-    </nav>
+  
+
+  
+
   
 
 
@@ -682,8 +484,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
