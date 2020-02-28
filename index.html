@@ -154,6 +154,549 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Java/java核心技术面试/7-int和Integer有什么区别？" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/25/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/7-int%E5%92%8CInteger%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/">7-int和Integer有什么区别？</a>
+    </h1>
+  
+
+        
+        <a href="/2020/02/25/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/7-int%E5%92%8CInteger%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/" class="archive-article-date">
+  	<time datetime="2020-02-25T11:04:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-25</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Java 虽然号称是面向对象的语言，但是<strong>原始数据类型</strong>仍然是重要的组成元素，所以在面试中，经常考察原始数据类型和包装类等 Java 语言特性。</p>
+<h1 id="1-int和Integer有什么区别？"><a href="#1-int和Integer有什么区别？" class="headerlink" title="1. int和Integer有什么区别？"></a>1. int和Integer有什么区别？</h1><h2 id="1-1-int"><a href="#1-1-int" class="headerlink" title="1.1 int"></a>1.1 int</h2><p><strong>int</strong> 是我们常说的整形数字，是 Java 的 8 个原始数据类型（Primitive Types，boolean、byte 、short、char、int、float、double、long）之一。<strong>Java 语言虽然号称一切都是对象，但原始数据类型是例外。</strong></p>
+<h2 id="1-2-Integer"><a href="#1-2-Integer" class="headerlink" title="1.2 Integer"></a>1.2 Integer</h2><p><strong>Integer</strong> 是 int 对应的包装类，它有一个 int 类型的字段存储数据，并且提供了基本操作，比如</p>
+<ol>
+<li><p>数学运算、</p>
+</li>
+<li><p>int 和字符串之间转换等。</p>
+</li>
+</ol>
+<p>在 Java 5 中，引入了自动装箱和自动拆箱功能（boxing/unboxing），Java 可以根据上下文，自动进行转换，极大地简化了相关编程。</p>
+<p>关于 Integer 的值缓存，这涉及 Java 5 中另一个改进。构建 Integer 对象的传统方式是直接调用构造器，直接 new 一个对象。</p>
+<p><strong>但是根据实践，我们发现大部分数据操作都是集中在有限的、较小的数值范围，</strong></p>
+<p>因而，在 Java 5 中新增了<strong>静态工厂方法 valueOf</strong>，在调用它的时候会利用一个缓存机制，带来了明显的性能改进。按照 Javadoc，这个值默认缓存是 -128 到 127 之间。</p>
+<h1 id="2-谈谈Integer的值缓存范围"><a href="#2-谈谈Integer的值缓存范围" class="headerlink" title="2.谈谈Integer的值缓存范围"></a>2.谈谈Integer的值缓存范围</h1><h1 id="理解自动装箱、拆箱"><a href="#理解自动装箱、拆箱" class="headerlink" title="理解自动装箱、拆箱"></a>理解自动装箱、拆箱</h1><p>自动装箱实际上算是一种<strong>语法糖</strong>。</p>
+<p>什么是语法糖？可以简单理解为 Java 平台为我们自动进行了一些转换，保证不同的写法在运行时等价，它们发生在编译阶段，也就是生成的字节码是一致的。</p>
+<p>像前面提到的整数，javac 替我们自动</p>
+<ul>
+<li><p>把装箱转换为 Integer.valueOf()，</p>
+</li>
+<li><p>把拆箱替换为 Integer.intValue()，</p>
+</li>
+</ul>
+<p>这似乎这也顺道回答了另一个问题，既然调用的是 Integer.valueOf，自然能够得到缓存的好处啊。</p>
+<p>验证：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Integer integer = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> unboxing = integer ++;</span><br></pre></td></tr></table></figure>
+
+<p>反编译结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1: invokestatic  <span class="comment">#2                  // Method</span></span><br><span class="line">java/lang/Integer.valueOf:(I)Ljava/lang/Integer;</span><br><span class="line">8: invokevirtual <span class="comment">#3                  // Method</span></span><br><span class="line">java/lang/Integer.intValue:()I</span><br></pre></td></tr></table></figure>
+
+<p>这种缓存机制并不是只有 Integer 才有，同样存在于其他的一些包装类，比如：</p>
+<ul>
+<li>Boolean，缓存了 true/false 对应实例，确切说，只会返回两个常量实例 Boolean.TRUE/FALSE。</li>
+<li>Short，同样是缓存了 -128 到 127 之间的数值。</li>
+<li>Byte，数值有限，所以全部都被缓存。</li>
+<li>Character，缓存范围’\u0000’ 到 ‘\u007F’。</li>
+</ul>
+<p>但是在实际编程实践中，原则上，<strong>建议避免无意中的装箱、拆箱行为，尤其是在性能敏感的场合</strong>，创建 10 万个 Java 对象和 10 万个整数的开销可不是一个数量级的，不管是内存使用还是处理速度，光是对象头的空间占用就已经是数量级的差距了。</p>
+<p>我们其实可以把这个观点扩展开，使用原始数据类型、数组甚至本地代码实现等，在性能极度敏感的场景往往具有比较大的优势，用其替换掉包装类、动态数组（如 ArrayList）等可以作为性能优化的备选项。一些追求极致性能的产品或者类库，会极力避免创建过多对象。当然，在大多数产品代码里，并没有必要这么做，还是以开发效率优先。以我们经常会使用到的计数器实现为例，下面是一个常见的线程安全计数器实现。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">原始数据类型</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">包装类</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/02/25/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/7-int%E5%92%8CInteger%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-数据结构与算法/leetcode/208. 实现 Trie (前缀树)" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/leetcode/208.%20%E5%AE%9E%E7%8E%B0%20Trie%20(%E5%89%8D%E7%BC%80%E6%A0%91)/">208.实现Trie（前缀树）</a>
+    </h1>
+  
+
+        
+        <a href="/2020/02/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/leetcode/208.%20%E5%AE%9E%E7%8E%B0%20Trie%20(%E5%89%8D%E7%BC%80%E6%A0%91)/" class="archive-article-date">
+  	<time datetime="2020-02-19T03:07:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h1><p>实现一个 Trie (前缀树)，包含 <code>insert</code>, <code>search</code>, 和 <code>startsWith</code> 这三个操作。</p>
+<p>示例:</p>
+<blockquote>
+<p>Trie trie = new Trie();<br>trie.insert(“apple”);<br>trie.search(“apple”);   // 返回 true<br>trie.search(“app”);     // 返回 false<br>trie.startsWith(“app”); // 返回 true<br>trie.insert(“app”);<br>trie.search(“app”);     // 返回 true</p>
+</blockquote>
+<p>说明:</p>
+<ul>
+<li>你可以假设所有的输入都是由小写字母 a-z 构成的。</li>
+<li>保证所有输入均为非空字符串。</li>
+</ul>
+<p>来源：<a href="https://leetcode-cn.com/problems/implement-trie-prefix-tree" target="_blank" rel="noopener">力扣（LeetCode）</a></p>
+<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc1jby265sj31cq0u041x.jpg" alt="image-20200219094854556"></p>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Your Trie object will be instantiated and called as such:</span></span><br><span class="line"><span class="comment"> * Trie obj = new Trie();</span></span><br><span class="line"><span class="comment"> * obj.insert(word);</span></span><br><span class="line"><span class="comment"> * boolean param_2 = obj.search(word);</span></span><br><span class="line"><span class="comment"> * boolean param_3 = obj.startsWith(prefix);</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TrieNode</span> </span>&#123;</span><br><span class="line">		<span class="keyword">private</span> TrieNode[] children;</span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> r = <span class="number">26</span>;</span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">boolean</span> isEnd;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">TrieNode</span><span class="params">()</span></span>&#123;</span><br><span class="line">        children = <span class="keyword">new</span> TrieNode[r];</span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">containsKey</span><span class="params">(<span class="keyword">char</span> ch)</span></span>&#123;</span><br><span class="line">      <span class="keyword">return</span> children[ch-<span class="string">'a'</span>] != <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="function"><span class="keyword">public</span> TrieNode <span class="title">get</span><span class="params">(<span class="keyword">char</span> ch)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> children[ch-<span class="string">'a'</span>];</span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(<span class="keyword">char</span> ch, TrieNode node)</span> </span>&#123;</span><br><span class="line">       children[ch-<span class="string">'a'</span>] = node;</span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setEnd</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       isEnd = <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isEnd</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    		<span class="keyword">return</span> isEnd;</span><br><span class="line">  	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Trie</span> </span>&#123;</span><br><span class="line">		<span class="keyword">private</span> TrieNode root;</span><br><span class="line">    <span class="comment">/** Initialize your data structure here. */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Trie</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        root = <span class="keyword">new</span> TrieNode();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/** Inserts a word into the trie. */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">insert</span><span class="params">(String word)</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/** Returns if the word is in the trie. */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">search</span><span class="params">(String word)</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/** Returns if there is any word in the trie that starts with the given prefix. */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">startsWith</span><span class="params">(String prefix)</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">leetcode</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/数据结构与算法//" class="article-tag-list-link color3">数据结构与算法</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/02/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/leetcode/208.%20%E5%AE%9E%E7%8E%B0%20Trie%20(%E5%89%8D%E7%BC%80%E6%A0%91)/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-数据结构与算法/字典树（Trie）树" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%88Trie%EF%BC%89%E6%A0%91/">字典树（Trie）树</a>
+    </h1>
+  
+
+        
+        <a href="/2020/02/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%88Trie%EF%BC%89%E6%A0%91/" class="archive-article-date">
+  	<time datetime="2020-02-19T01:36:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-Trie-树的数据结构"><a href="#1-Trie-树的数据结构" class="headerlink" title="1. Trie 树的数据结构"></a>1. Trie 树的数据结构</h1><p>Trie树，即字典树，⼜称单词查找树或键树，是⼀种树形结构，是⼀种哈希树的变种。</p>
+<p>典型应⽤是⽤于统计和排序⼤量的字符串（但不仅限于字符串），所以经常被搜索引擎系统⽤于⽂本词频统计。</p>
+<p>如平衡树和哈希表，使我们能够在字符串数据集中搜索单词。为什么我们还需要 Trie 树呢？尽管哈希表可以在<em>O</em>(1)时间内寻找键值，却无法高效的完成以下操作：</p>
+<ul>
+<li>找到具有同一前缀的全部键值。</li>
+<li>按词典序枚举字符串的数据集。</li>
+</ul>
+<p>Trie 树优于哈希表的另一个理由是，随着哈希表大小增加，会出现大量的冲突，时间复杂度可能增加到 O(n)，其中 n 是插入的键的数量。与哈希表相比，Trie 树在存储多个具有相同前缀的键时可以使用较少的空间。此时 Trie 树只需要 O(m) 的时间复杂度，其中 m 为键长。而在平衡树中查找键值需要 O(mlogn) 时间复杂度。</p>
+<p>字典树的优点是：最⼤限度地减少⽆谓的字符串⽐较，查询效率⽐哈希表⾼。</p>
+<img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc1gr88a9rj30yh0u07wh.jpg" alt="image-20200219094149853" style="zoom:50%;" />
+
+<h2 id="1-1-实际存储的结构"><a href="#1-1-实际存储的结构" class="headerlink" title="1.1 实际存储的结构"></a>1.1 实际存储的结构</h2><p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc1gyji3qij31cq0u0ngi.jpg" alt="image-20200219094854556"></p>
+<p>Trie 树是一个有根的树，其结点具有以下字段：</p>
+<ul>
+<li>最多 R 个指向子结点的链接，其中每个链接对应字母表数据集中的一个字母。<br>本文中假定 R 为 26，小写拉丁字母的数量。</li>
+<li>布尔字段，以指定节点是对应键的结尾还是只是键前缀。</li>
+</ul>
+<p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc1k7t69s8j30dw0dwq71.jpg" alt=""></p>
+<p><em>单词 “leet” 在 Trie 树中的表示</em></p>
+<h2 id="1-2-实际中的应用"><a href="#1-2-实际中的应用" class="headerlink" title="1.2 实际中的应用"></a>1.2 实际中的应用</h2><h3 id="自动补全"><a href="#自动补全" class="headerlink" title="自动补全"></a>自动补全</h3><p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc1gv7koepj31k10u0gqx.jpg" alt="image-20200219094541028"></p>
+<h3 id="拼写检查"><a href="#拼写检查" class="headerlink" title="拼写检查"></a>拼写检查</h3><p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc1jgdw8gaj30ck0auq39.jpg" alt=""></p>
+<h3 id="IP路由（最长前缀匹配）"><a href="#IP路由（最长前缀匹配）" class="headerlink" title="IP路由（最长前缀匹配）"></a>IP路由（最长前缀匹配）</h3><p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc1jgm7t9pg30p30fqaah.gif" alt=""></p>
+<h3 id="9宫格打字预测"><a href="#9宫格打字预测" class="headerlink" title="9宫格打字预测"></a>9宫格打字预测</h3><p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc1jgsmltxj304g04g0sr.jpg" alt=""></p>
+<h1 id="2-Trie-树的核⼼思想"><a href="#2-Trie-树的核⼼思想" class="headerlink" title="2. Trie 树的核⼼思想"></a>2. Trie 树的核⼼思想</h1><p>Trie的核⼼思想是<strong>空间换时间</strong>。利⽤字符串的公共前缀来降低查询时间的开销以达到提⾼效率的⽬的。</p>
+<p>它并不是一个字符串存在一个节点上，而是用边来存这些字母的</p>
+<blockquote>
+<p>一个单词有多长，就是前面走过的边有几条 </p>
+</blockquote>
+<h1 id="3-Trie-树的基本性质"><a href="#3-Trie-树的基本性质" class="headerlink" title="3. Trie 树的基本性质"></a>3. Trie 树的基本性质</h1><ol>
+<li><p>根节点不包含字符，除根节点外每⼀个节点都只包含⼀个字符。</p>
+</li>
+<li><p>从根节点到某⼀节点，路径上经过的字符连接起来，为该节点对应的字符串。</p>
+</li>
+<li><p>每个节点的所有⼦节点包含的字符都不相同。</p>
+</li>
+</ol>
+<h1 id="4-leetcode题目"><a href="#4-leetcode题目" class="headerlink" title="4. leetcode题目"></a>4. leetcode题目</h1><p><a href="https://leetcode-cn.com/problems/implement-trie-prefix-tree/?utm_source=LCUS&utm_medium=ip_redirect_q_uns&utm_campaign=transfer2china" target="_blank" rel="noopener">208. 实现 Trie (前缀树)</a></p>
+<p><a href="https://leetcode-cn.com/problems/word-search-ii/" target="_blank" rel="noopener">212. 单词搜索 II</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">数据结构与算法</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Trie树</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/数据结构与算法//" class="article-tag-list-link color3">数据结构与算法</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/02/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%88Trie%EF%BC%89%E6%A0%91/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Java/jvm/05-JVM是如何执行方法调用的？（下）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/18/Java/jvm/05-JVM%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8%E7%9A%84%EF%BC%9F%EF%BC%88%E4%B8%8B%EF%BC%89/">05-JVM是如何执行方法调用的？（下）</a>
+    </h1>
+  
+
+        
+        <a href="/2020/02/18/Java/jvm/05-JVM%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8%E7%9A%84%EF%BC%9F%EF%BC%88%E4%B8%8B%EF%BC%89/" class="archive-article-date">
+  	<time datetime="2020-02-18T06:55:37.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Java-虚拟机中虚方法调用的具体实现"><a href="#Java-虚拟机中虚方法调用的具体实现" class="headerlink" title="Java 虚拟机中虚方法调用的具体实现"></a>Java 虚拟机中虚方法调用的具体实现</h1><p>在实际运行过程中，Java 虚拟机是如何高效地确定每个 Passenger 实例应该去哪条通道的呢？我们一起来看一下。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//定义了一个抽象类</span></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Passenger</span> </span>&#123;</span><br><span class="line">  <span class="comment">//抽象方法</span></span><br><span class="line">  <span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">passThroughImmigration</span><span class="params">()</span></span>;</span><br><span class="line">  <span class="comment">//重写自 Object 类的 toString 方法</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123; ... &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ForeignerPassenger</span> <span class="keyword">extends</span> <span class="title">Passenger</span> </span>&#123;</span><br><span class="line">   <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">passThroughImmigration</span><span class="params">()</span> </span>&#123; <span class="comment">/* 进外国人通道 */</span> &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ChinesePassenger</span> <span class="keyword">extends</span> <span class="title">Passenger</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">passThroughImmigration</span><span class="params">()</span> </span>&#123; <span class="comment">/* 进中国人通道 */</span> &#125;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">visitDutyFreeShops</span><span class="params">()</span> </span>&#123; <span class="comment">/* 逛免税店 */</span> &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Passenger passenger = ...</span><br><span class="line">passenger.passThroughImmigration();</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-虚方法调用的指令"><a href="#1-虚方法调用的指令" class="headerlink" title="1. 虚方法调用的指令"></a>1. 虚方法调用的指令</h2><p>Java 里所有：</p>
+<ol>
+<li>非私有实例方法调用都会被编译成 invokevirtual 指令，</li>
+<li>而接口方法调用都会被编译成 invokeinterface 指令。</li>
+</ol>
+<p>这两种指令，均属于 Java 虚拟机中的虚方法调用。如果这两种指令所声明的目标方法被标记为 final，那么 Java 虚拟机会采用静态绑定。</p>
+<p>在绝大多数情况下，==<strong>Java 虚拟机需要根据调用者的动态类型，来确定虚方法调用的目标方法</strong>==。这个过程我们称之为<strong>动态绑定</strong>。那么，相对于静态绑定的非虚方法调用来说，虚方法调用更加耗时。</p>
+<blockquote>
+<p>  编译后生成的是字节码，字节码里的只是符号引用，运行的时候才会解析为实际引用，此时才知道真正的动态类型</p>
+</blockquote>
+<p>在 Java 虚拟机中，<strong>静态绑定</strong>包括</p>
+<ol>
+<li>用于<u>调用静态方法</u>的 invokestatic 指令，</li>
+<li>和用于调用构造器、私有实例方法以及超类非私有实例方法的 invokespecial 指令。</li>
+</ol>
+<blockquote>
+<p>  为什么调用超类非私有实例方法会属于静态绑定呢？</p>
+<p>  答: 通过super关键字来调用父类方法，本意就是想要调用父类的特定方法，而不是根据具体类型决定目标方法。</p>
+</blockquote>
+<p>如果虚方法调用指向一个标记为 final 的方法，那么 Java 虚拟机也可以静态绑定该虚方法调用的目标方法。</p>
+<h2 id="2-方法表—空间换时间"><a href="#2-方法表—空间换时间" class="headerlink" title="2. 方法表—空间换时间"></a>2. 方法表—空间换时间</h2><p>Java 虚拟机中采取了一种<strong>用空间换取时间</strong>的策略来实现动态绑定。它为每个类生成一张方法表，用以快速定位目标方法。那么方法表具体是怎样实现的呢？</p>
+<h3 id="2-1-方法表的具体实现"><a href="#2-1-方法表的具体实现" class="headerlink" title="2.1 方法表的具体实现"></a>2.1 方法表的具体实现</h3><ul>
+<li>方发表的构造时机—-链接</li>
+</ul>
+<p>在<strong>类加载机制的==链接==部分</strong>中，曾提到类加载的准备阶段，它除了为静态字段分配内存之外，还会构造与该类相关联的<strong>方法表</strong>。这个数据结构，便是 Java 虚拟机实现动态绑定的关键所在。</p>
+<p>下面我将以 invokevirtual 所使用的虚方法表（virtual method table，vtable）为例介绍方法表的用法。invokeinterface 所使用的接口方法表（interface method table，itable）稍微复杂些，但是原理其实是类似的。</p>
+<p><strong>==方法表本质上是一个数组==</strong>，每个数组元素指向一个当前类及其祖先类中非私有的没有被标记为final的实例方法。这些方法可能是具体的、可执行的方法，也可能是没有相应字节码的抽象方法。</p>
+<h3 id="2-2-方法表的两个特质"><a href="#2-2-方法表的两个特质" class="headerlink" title="2.2 方法表的两个特质"></a>2.2 方法表的两个特质</h3><ol>
+<li>其一，子类方法表中<strong>包含父类方法表中的所有方法</strong>；</li>
+<li>其二，子类方法在方法表中的索引值，与它所<strong>重写的父类方法的索引值相同。</strong></li>
+</ol>
+<p>我们知道，方法调用指令中的<strong>符号引用</strong>会在执行之前解析成<strong>实际引用</strong>。</p>
+<ol>
+<li>对于静态绑定的方法调用而言，实际引用将指向具体的目标方法。</li>
+<li>对于动态绑定的方法调用而言，实际引用则是方法表的索引值（实际上并不仅是索引值）。</li>
+</ol>
+<h3 id="2-3-动态绑定的过程"><a href="#2-3-动态绑定的过程" class="headerlink" title="2.3 动态绑定的过程"></a>2.3 动态绑定的过程</h3><p>在执行过程中，Java 虚拟机将获取调用者的实际类型，并在该实际类型的虚方法表中，根据索引值获得目标方法。<strong>这个过程便是动态绑定</strong>。</p>
+<p><img src="https://static001.geekbang.org/resource/image/f1/c3/f1ff9dcb297a458981bd1d189a5b04c3.png" alt=""></p>
+<p>在我们的例子中，抽象类 Passenger 的方法表包括两个方法：</p>
+<ol>
+<li>toString</li>
+<li>passThroughImmigration</li>
+</ol>
+<p>它们分别对应 0 号和 1 号。之所以方法表调换了 toString 方法和 passThroughImmigration 方法的位置，<strong>是因为 toString 方法的索引值需要与 Object 类中同名方法的索引值一致</strong>。为了保持简洁，这里我就不考虑 Object 类中的其他方法。</p>
+<p>ForeignerPassenger 的方法表同样有两行。其中，</p>
+<ul>
+<li>0 号方法指向继承而来的 Passenger 类的 toString 方法。</li>
+<li>1 号方法则指向自己重写的 passThroughImmigration 方法。</li>
+</ul>
+<p>ChinesePassenger 的方法表则包括三个方法，</p>
+<ul>
+<li>除了继承而来的 Passenger 类的 toString 方法，</li>
+<li>自己重写的 passThroughImmigration 方法之外，</li>
+<li>还包括独有的 visitDutyFreeShops 方法。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Passenger passenger = ...</span><br><span class="line">passenger.passThroughImmigration();</span><br></pre></td></tr></table></figure>
+
+<p>这里，Java 虚拟机的工作可以想象为导航员。每当来了一个乘客需要出境：</p>
+<ol>
+<li>导航员会先问是中国人还是外国人（获取动态类型），</li>
+<li>然后翻出中国人 / 外国人对应的小册子（获取动态类型的方法表）</li>
+<li>小册子的第 1 页便写着应该到哪条通道办理出境手续（用 1 作为索引来查找方法表所对应的目标方法）</li>
+</ol>
+<h3 id="2-4-动态绑定与静态绑定的区别"><a href="#2-4-动态绑定与静态绑定的区别" class="headerlink" title="2.4 动态绑定与静态绑定的区别"></a>2.4 动态绑定与静态绑定的区别</h3><p>实际上，使用了方法表的动态绑定与静态绑定相比，仅仅多出几个内存解引用操作：</p>
+<ol>
+<li>访问栈上的调用者，</li>
+<li>读取调用者的动态类型，</li>
+<li>读取该类型的方法表，</li>
+<li>读取方法表中某个索引值所对应的目标方法。</li>
+</ol>
+<p>相对于创建并初始化 Java 栈帧来说，这几个内存解引用操作的开销简直可以忽略不计。</p>
+<p>那么我们是否可以认为虚方法调用对性能没有太大影响呢？</p>
+<p>其实是不能的，上述优化的效果看上去十分美好，但实际上仅存在于解释执行中，或者即时编译代码的最坏情况中。这是因为即时编译器还拥有另外两种性能更好的优化手段：<strong>内联缓存（inlining cache）</strong>和<strong>方法内联（method inlining）</strong>。</p>
+<h2 id="3-即时编译优化手段一：内联缓存"><a href="#3-即时编译优化手段一：内联缓存" class="headerlink" title="3. 即时编译优化手段一：内联缓存"></a>3. 即时编译优化手段一：内联缓存</h2><p>内联缓存是一种加快动态绑定的优化技术。它能够缓存虚方法调用中调用者的动态类型，以及该类型所对应的目标方法。</p>
+<p>在之后的执行过程中，如果碰到已缓存的类型，内联缓存便会直接调用该类型所对应的目标方法。如果没有碰到已缓存的类型，内联缓存则会退化至使用基于方法表的动态绑定。</p>
+<blockquote>
+<p>  在我们的例子中，这相当于导航员记住了上一个出境乘客的国籍和对应的通道，例如中国人，走了左边通道出境。那么下一个乘客想要出境的时候，导航员会先问是不是中国人，是的话就走左边通道。如果不是的话，只好拿出外国人的小册子，翻到第 1 页，再告知查询结果：右边。</p>
+</blockquote>
+<p>在针对多态的优化手段中，我们通常会提及以下三个术语。</p>
+<ol>
+<li>单态（monomorphic）指的是仅有一种状态的情况。</li>
+<li>多态（polymorphic）指的是有限数量种状态的情况。二态（bimorphic）是多态的其中一种。</li>
+<li>超多态（megamorphic）指的是更多种状态的情况。通常我们用一个具体数值来区分多态和超多态。在这个数值之下，我们称之为多态。否则，我们称之为超多态。</li>
+</ol>
+<p>对于内联缓存来说，我们也有对应的</p>
+<ol>
+<li>单态内联缓存：顾名思义，便是只缓存了一种动态类型以及它所对应的目标方法。它的实现非常简单：比较所缓存的动态类型，如果命中，则直接调用对应的目标方法。</li>
+<li>多态内联缓存和超多态内联缓存。多态内联缓存则缓存了多个动态类型及其目标方法。它需要逐个将所缓存的动态类型与当前动态类型进行比较，如果命中，则调用对应的目标方法。</li>
+</ol>
+<p>一般来说，我们会将更加热门的动态类型放在前面。在实践中，大部分的虚方法调用均是单态的，也就是只有一种动态类型。<strong>==为了节省内存空间，Java 虚拟机只采用单态内联缓存。==</strong></p>
+<p>前面提到，当内联缓存没有命中的情况下，Java 虚拟机需要重新使用方法表进行动态绑定。对于内联缓存中的内容，我们有两种选择。</p>
+<ul>
+<li><p>一是替换单态内联缓存中的纪录。这种做法就好比 CPU 中的数据缓存，<strong>它对数据的局部性有要求</strong>，即在替换内联缓存之后的一段时间内，方法调用的调用者的动态类型应当保持一致，从而能够有效地利用内联缓存。因此，在最坏情况下，我们用两种不同类型的调用者，轮流执行该方法调用，那么每次进行方法调用都将替换内联缓存。也就是说，只有写缓存的额外开销，而没有用缓存的性能提升。</p>
+</li>
+<li><p>另外一种选择则是==<strong>劣化为超多态状态。这也是 Java 虚拟机的具体实现方式。</strong>==处于这种状态下的内联缓存，实际上放弃了优化的机会。它将直接访问方法表，来动态绑定目标方法。与替换内联缓存纪录的做法相比，它牺牲了优化的机会，但是节省了写缓存的额外开销。</p>
+</li>
+</ul>
+<blockquote>
+<p>  具体到我们的例子，如果来了一队乘客，其中外国人和中国人依次隔开，那么在重复使用的单态内联缓存中，导航员需要反复记住上个出境的乘客，而且记住的信息在处理下一乘客时又会被替换掉。因此，倒不如一直不记，以此来节省脑细胞。</p>
+</blockquote>
+<p>虽然内联缓存附带内联二字，但是它并没有内联目标方法。这里需要明确的是，任何方法调用除非被内联，否则都会有固定开销。这些开销来源于保存程序在该方法中的执行位置，以及新建、压入和弹出新方法所使用的栈帧。</p>
+<h2 id="4-即时编译优化手段一：方法内联"><a href="#4-即时编译优化手段一：方法内联" class="headerlink" title="4. 即时编译优化手段一：方法内联"></a>4. 即时编译优化手段一：方法内联</h2><p>对于极其简单的方法而言，比如说 getter/setter，这部分固定开销占据的 CPU 时间甚至超过了方法本身。此外，在即时编译中，方法内联不仅仅能够消除方法调用的固定开销，而且还增加了进一步优化的可能性，我会在后面详细介绍方法内联的内容。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">jvm</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/02/18/Java/jvm/05-JVM%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8%E7%9A%84%EF%BC%9F%EF%BC%88%E4%B8%8B%EF%BC%89/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Java/jvm/04-JVM是如何执行方法调用的？（上）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -185,8 +728,7 @@
 <p>然而，Java 编译器直接将我的方法调用识别为调用第二个方法，这究竟是为什么呢？带着这个问题，我们来看一看 Java 虚拟机是怎么识别目标方法的。</p>
 <h1 id="1-重载与重写"><a href="#1-重载与重写" class="headerlink" title="1.重载与重写"></a>1.重载与重写</h1><p>在 Java 中，方法存在重载以及重写的概念，重载指的是方法名相同而参数类型不相同的方法之间的关系，重写指的是方法名相同并且参数类型也相同的方法之间的关系。</p>
 <p>Java 虚拟机识别方法的方式略有不同，除了方法名和参数类型之外，它还会考虑返回类型。</p>
-<h2 id="1-1重载"><a href="#1-1重载" class="headerlink" title="1.1重载"></a>1.1重载</h2><p>在 Java 程序里，如果同一个类中出现多个名字相同，并且参数类型相同的方法，那么它无法通过编译。</p>
-<p>也就是说，在正常情况下，如果我们想要在同一个类中定义名字相同的方法，那么它们的参数类型必须不同。这些方法之间的关系，我们称之为<strong>重载</strong>。</p>
+<h2 id="1-1重载"><a href="#1-1重载" class="headerlink" title="1.1重载"></a>1.1重载</h2><p>在 Java 程序里，如果同一个类中出现多个名字相同，并且参数类型相同的方法，那么它无法通过编译。也就是说，在正常情况下，如果我们想要在同一个类中定义名字相同的方法，那么它们的参数类型必须不同。这些方法之间的关系，我们称之为<strong>重载</strong>。</p>
 <blockquote>
 <p>小知识：这个限制可以通过字节码工具绕开。也就是说，在编译完成之后，我们可以再向class文件中添加方法名和参数类型相同，<u>而返回类型不同的方法</u>。</p>
 <p>当这种包括多个方法名相同、参数类型相同，而返回类型不同的方法的类，出现在Java编译器的用户类路径上时，它是怎么确定需要调用哪个方法的呢？</p>
@@ -200,16 +742,16 @@
 <li>如果在第 1 个阶段中没有找到适配的方法，那么在允许自动装拆箱，但不允许可变长参数的情况下选取重载方法；</li>
 <li>如果在第 2 个阶段中没有找到适配的方法，那么在允许自动装拆箱以及可变长参数的情况下选取重载方法。</li>
 </ol>
-<h3 id="1-1-2形式参数类型的继承关系规则"><a href="#1-1-2形式参数类型的继承关系规则" class="headerlink" title="1.1.2形式参数类型的继承关系规则"></a>1.1.2形式参数类型的继承关系规则</h3><p>如果 Java 编译器在同一个阶段中找到了多个适配的方法，那么它会在其中选择一个最为贴切的，而决定贴切程度的一个关键就是<strong>形式参数类型的继承关系</strong>。</p>
+<h3 id="1-1-2形参类型的继承关系规则"><a href="#1-1-2形参类型的继承关系规则" class="headerlink" title="1.1.2形参类型的继承关系规则"></a>1.1.2形参类型的继承关系规则</h3><p>如果 Java 编译器在同一个阶段中找到了多个适配的方法，那么它会在其中选择一个最为贴切的，而决定贴切程度的一个关键就是<strong>形式参数类型的继承关系</strong>。</p>
 <blockquote>
 <p>在开头的例子中，当传入 null 时，它既可以匹配第一个方法中声明为 Object 的形式参数，也可以匹配第二个方法中声明为 String 的形式参数。</p>
 <p>由于 String 是 Object 的子类，因此 Java 编译器会认为第二个方法更为贴切。</p>
 </blockquote>
 <h3 id="1-1-3重载也可作用于继承而来的方法"><a href="#1-1-3重载也可作用于继承而来的方法" class="headerlink" title="1.1.3重载也可作用于继承而来的方法"></a>1.1.3重载也可作用于继承而来的方法</h3><p>除了同一个类中的方法，重载也可以作用于这个类所继承而来的方法。</p>
 <p>也就是说，如果子类定义了与父类中非私有方法同名的方法，而且这两个方法的参数类型不同，那么在子类中，这两个方法同样构成了<strong>重载</strong>。</p>
-<h2 id="1-2重写"><a href="#1-2重写" class="headerlink" title="1.2重写"></a>1.2重写</h2><p>那么，如果子类定义了与父类中非私有方法同名的方法，而且这两个方法的参数类型相同，那么这两个方法之间又是什么关系呢？</p>
+<h2 id="1-2重写"><a href="#1-2重写" class="headerlink" title="1.2重写"></a>1.2重写</h2><p>那么，如果子类定义了与父类中非私有方法同名的方法，而且这两个方法的参数类型相同(此处缺一个返回值)，那么这两个方法之间又是什么关系呢？</p>
 <ul>
-<li><p>如果这两个方法都是静态的，那么子类中的方法隐藏了父类中的方法。</p>
+<li><p>如果这两个方法都是静态的，那么子类中的方法<strong>隐藏</strong>了父类中的方法。</p>
 </li>
 <li><p>如果这两个方法都不是静态的，且都不是私有的，那么子类的方法<strong>重写</strong>了父类中的方法。</p>
 </li>
@@ -226,13 +768,13 @@
 </li>
 <li><p>方法名</p>
 </li>
-<li><p><strong>方法描述符（method descriptor）</strong>：它是由方法的<strong>参数类型</strong>以及<strong>返回类型</strong>所构成。</p>
+<li><p>==<strong>方法描述符（method descriptor）</strong>==：它是由方法的<strong>参数类型</strong>以及<strong>返回类型</strong>所构成。</p>
 </li>
 </ol>
 <p>在同一个类中，如果同时出现多个名字相同且描述符也相同的方法，那么 Java 虚拟机会在类的验证阶段报错。</p>
 <p>可以看到，<strong>Java 虚拟机与 Java 语言不同</strong>：它并不限制名字与参数类型相同，但返回类型不同的方法出现在同一个类中，对于调用这些方法的字节码来说，由于字节码所附带的方法描述符包含了返回类型，因此 Java 虚拟机能够准确地识别目标方法。</p>
 <p>Java 虚拟机中关于<strong>方法重写的判定</strong>同样基于方法描述符。也就是说，如果子类定义了与父类中非私有、非静态方法同名的方法，那么只有当这两个方法的参数类型以及返回类型一致，Java 虚拟机才会判定为重写。</p>
-<p>对于 Java 语言中重写而 Java 虚拟机中非重写的情况，编译器会通过生成桥接方法<a href="https://docs.oracle.com/javase/tutorial/java/generics/bridgeMethods.html" target="_blank" rel="noopener">[2]</a>来实现 Java 中的重写语义。</p>
+<p>对于 Java 语言中重写而 Java 虚拟机中非重写的情况，编译器会通过生成<strong>桥接方法</strong><a href="https://docs.oracle.com/javase/tutorial/java/generics/bridgeMethods.html" target="_blank" rel="noopener">[2]</a>来实现 Java 中的重写语义。</p>
 <p>由于对重载方法的区分在编译阶段已经完成，我们可以认为 Java 虚拟机不存在重载这一概念。</p>
 <p>因此，在某些文章中：</p>
 <ul>
@@ -264,12 +806,16 @@
 <h1 id="3-调用指令的符号引用"><a href="#3-调用指令的符号引用" class="headerlink" title="3.调用指令的符号引用"></a>3.调用指令的符号引用</h1><blockquote>
 <p>在 class 文件中，Java 编译器会用符号引用指代目标方法。在执行调用指令前，它所附带的符号引用需要被解析成实际引用。对于可以静态绑定的方法调用而言，实际引用为目标方法的指针。对于需要动态绑定的方法调用而言，实际引用为辅助动态绑定的信息。</p>
 </blockquote>
-<p>在编译过程中，我们并不知道目标方法的具体内存地址。因此，Java 编译器会暂时用<strong>符号引用</strong>来表示该目标方法。这一符号引用包括目标方法所在的类或接口的名字，以及目标方法的方法名和方法描述符。</p>
+<p>在编译过程中，我们并不知道目标方法的具体内存地址。因此，Java 编译器会暂时用<strong>符号引用</strong>来表示该目标方法。这一符号引用包括：</p>
+<ol>
+<li>目标方法所在的类或接口的名字，</li>
+<li>以及目标方法的方法名和方法描述符。</li>
+</ol>
 <p>符号引用存储在 class 文件的常量池之中。根据目标方法是否为接口方法，这些引用可分为<strong>接口符号引用</strong>和<strong>非接口符号引用</strong>。</p>
 <p>下面的例子中，利用“javap -v”打印某个类的常量池。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 在奸商.class的常量池中，<span class="comment">#16为接口符号引用，指向接口方法"客户.isVIP()"。而#22为非接口符号引用，指向静态方法"奸商.价格歧视()"。</span></span><br><span class="line">$ javap -v 奸商.class ...</span><br><span class="line">Constant pool:</span><br><span class="line">...</span><br><span class="line">  <span class="comment">#16 = InterfaceMethodref #27.#29        // 客户.isVIP:()Z</span></span><br><span class="line">...</span><br><span class="line">  <span class="comment">#22 = Methodref          #1.#33         // 奸商.价格歧视:()D</span></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 
-<p>在执行使用了符号引用的字节码前，Java 虚拟机需要解析这些符号引用，并替换为实际引用。</p>
+<p>在执行使用了符号引用的字节码前，Java 虚拟机需要解析这些符号引用，并替换为<strong>实际引用</strong>。</p>
 <p>对于非接口符号引用，假定该符号引用所指向的类为 C，则 Java 虚拟机会按照如下步骤进行查找：</p>
 <ol>
 <li>在 C 中查找符合名字及描述符的方法。</li>
@@ -283,7 +829,9 @@
 <li>如果没有找到，在 Object 类中的公有实例方法中搜索。</li>
 <li>如果没有找到，则在 I 的超接口中搜索。这一步的搜索结果的要求与非接口符号引用步骤 3 的要求一致。</li>
 </ol>
-<p>经过上述的解析步骤之后，符号引用会被解析成实际引用。对于可以静态绑定的方法调用而言，实际引用是一个指向方法的指针。对于需要动态绑定的方法调用而言，实际引用则是一个方法表的索引。</p>
+<p>经过上述的解析步骤之后，符号引用会被解析成实际引用。</p>
+<p>对于可以静态绑定的方法调用而言，实际引用是一个指向方法的指针。</p>
+<p>对于需要动态绑定的方法调用而言，实际引用则是一个方法表的索引。</p>
 <h1 id="4-两个生成桥接方法的例子"><a href="#4-两个生成桥接方法的例子" class="headerlink" title="4.两个生成桥接方法的例子"></a>4.两个生成桥接方法的例子</h1><p>可以通过“javap -v”来查看 class 文件所包含的方法。</p>
 <ol>
 <li>重写方法的返回类型不一致：</li>
@@ -706,19 +1254,19 @@
 
 
   
-    <article id="post-leetcode/69-x-的平方根" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-数据结构与算法/leetcode/69-x-的平方根" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/14/leetcode/69-x-%E7%9A%84%E5%B9%B3%E6%96%B9%E6%A0%B9/">69. x 的平方根</a>
+      <a class="article-title" href="/2020/02/14/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/leetcode/69-x-%E7%9A%84%E5%B9%B3%E6%96%B9%E6%A0%B9/">69. x 的平方根</a>
     </h1>
   
 
         
-        <a href="/2020/02/14/leetcode/69-x-%E7%9A%84%E5%B9%B3%E6%96%B9%E6%A0%B9/" class="archive-article-date">
+        <a href="/2020/02/14/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/leetcode/69-x-%E7%9A%84%E5%B9%B3%E6%96%B9%E6%A0%B9/" class="archive-article-date">
   	<time datetime="2020-02-14T02:54:04.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-14</time>
 </a>
         
@@ -763,7 +1311,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/14/leetcode/69-x-%E7%9A%84%E5%B9%B3%E6%96%B9%E6%A0%B9/">展开全文 >></a>
+          <a class="article-more-a" href="/2020/02/14/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/leetcode/69-x-%E7%9A%84%E5%B9%B3%E6%96%B9%E6%A0%B9/">展开全文 >></a>
         </p>
       
 
@@ -793,19 +1341,19 @@
 
 
   
-    <article id="post-leetcode/22-括号生成" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-数据结构与算法/leetcode/22-括号生成" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/14/leetcode/22-%E6%8B%AC%E5%8F%B7%E7%94%9F%E6%88%90/">22. 括号生成</a>
+      <a class="article-title" href="/2020/02/14/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/leetcode/22-%E6%8B%AC%E5%8F%B7%E7%94%9F%E6%88%90/">22. 括号生成</a>
     </h1>
   
 
         
-        <a href="/2020/02/14/leetcode/22-%E6%8B%AC%E5%8F%B7%E7%94%9F%E6%88%90/" class="archive-article-date">
+        <a href="/2020/02/14/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/leetcode/22-%E6%8B%AC%E5%8F%B7%E7%94%9F%E6%88%90/" class="archive-article-date">
   	<time datetime="2020-02-14T02:38:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-14</time>
 </a>
         
@@ -864,7 +1412,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/14/leetcode/22-%E6%8B%AC%E5%8F%B7%E7%94%9F%E6%88%90/">展开全文 >></a>
+          <a class="article-more-a" href="/2020/02/14/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/leetcode/22-%E6%8B%AC%E5%8F%B7%E7%94%9F%E6%88%90/">展开全文 >></a>
         </p>
       
 
@@ -901,7 +1449,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/14/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/6-%E8%B0%88%E8%B0%88%E5%8F%91%E5%B0%84%E6%9C%BA%E5%88%B6%EF%BC%9F%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%98%AF%E5%9F%BA%E4%BA%8E%E4%BB%80%E4%B9%88%E5%8E%9F%E7%90%86%EF%BC%9F/">6 | 谈谈发射机制？动态代理是基于什么原理？</a>
+      <a class="article-title" href="/2020/02/14/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/6-%E8%B0%88%E8%B0%88%E5%8F%91%E5%B0%84%E6%9C%BA%E5%88%B6%EF%BC%9F%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%98%AF%E5%9F%BA%E4%BA%8E%E4%BB%80%E4%B9%88%E5%8E%9F%E7%90%86%EF%BC%9F/">6 | 谈谈反射机制？动态代理是基于什么原理？</a>
     </h1>
   
 
@@ -1042,726 +1590,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2020/02/14/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/6-%E8%B0%88%E8%B0%88%E5%8F%91%E5%B0%84%E6%9C%BA%E5%88%B6%EF%BC%9F%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%98%AF%E5%9F%BA%E4%BA%8E%E4%BB%80%E4%B9%88%E5%8E%9F%E7%90%86%EF%BC%9F/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Java/java核心技术面试/5-String、StringBuffer、StringBuilder有什么区别？" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/13/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/5-String%E3%80%81StringBuffer%E3%80%81StringBuilder%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/">5 | String、StringBuffer、StringBuilder有什么区别？</a>
-    </h1>
-  
-
-        
-        <a href="/2020/02/13/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/5-String%E3%80%81StringBuffer%E3%80%81StringBuilder%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/" class="archive-article-date">
-  	<time datetime="2020-02-13T09:46:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-13</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>字符串几乎在所有编程语言里都是个特殊的存在，因为不管是数量还是体积，字符串都是大多数应用中的重要组成。</p>
-<h1 id="典型回答"><a href="#典型回答" class="headerlink" title="典型回答"></a>典型回答</h1><ul>
-<li><code>String</code> 是 Java 语言非常基础和重要的类，提供了构造和管理字符串的各种基本逻辑。</li>
-</ul>
-<p>由于String在Java世界中使用过于频繁，Java为了避免在一个系统中产生大量的String对象，引入了<strong>字符串常量池</strong>。其运行机制是：创建一个字符串时，首先检查池中是否有值相同的字符串对象，如果有则不需要创建直接从池中刚查找到的对象引用；如果没有则新建字符串对象，返回对象引用，并且将新创建的对象放入池中。但是，通过new方法创建的String对象是不检查字符串池的，而是直接在堆区或栈区创建一个新的对象，也不会把对象放入池中。上述原则只适用于通过直接给String对象引用赋值的情况。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String str1 = <span class="string">"123"</span>; <span class="comment">//通过直接量赋值方式，放入字符串常量池</span></span><br><span class="line">String str2 = <span class="keyword">new</span> String(“<span class="number">123</span>”);<span class="comment">//通过new方式赋值方式，不放入字符串常量池</span></span><br></pre></td></tr></table></figure>
-
-<p>注意：String提供了inter()方法。调用该方法时，如果常量池中包括了一个等于此String对象的字符串（由equals方法确定），则返回池中的字符串。否则，将此String对象添加到池中，并且返回此池中对象的引用。</p>
-<p>针对常量池的优化。当2个String对象拥有相同的值时，他们只引用常量池中的同一个拷贝。当同一个字符串反复出现时，这个技术可以大幅度节省内存空间。</p>
-<blockquote>
-<p> <strong>不可变性</strong>：它是典型的 <code>Immutable</code> 类，被声明成为 final class，所有属性也都是 final 的。一旦生成则不能再对它进行改变。也由于它的不可变性，类似拼接、裁剪字符串等动作，都会产生新的 String 对象。由于字符串操作的普遍性，所以相关操作的效率往往对应用性能有明显影响。</p>
-<p>不可变的主要作用在于当一个对象需要被多线程共享，并且访问频繁时，可以省略同步和锁等待的时间，从而大幅度提高系统性能。不可变模式是一个可以提高多线程程序的性能，降低多线程程序复杂度的设计模式。</p>
-<p>字符串操作不当可能会产生大量临时字符串，以及线程安全方面的区别。</p>
-</blockquote>
-<ul>
-<li><p><code>StringBuffer</code> 是为解决上面提到拼接产生太多中间对象的问题而提供的一个类，我们可以用 append 或者 add 方法，把字符串添加到已有序列的末尾或者指定位置。<strong>StringBuffer 本质是一个线程安全的可修改字符序列</strong>，它保证了线程安全，也随之带来了额外的性能开销，所以除非有线程安全的需要，不然还是推荐使用它的后继者，也就是 StringBuilder。</p>
-</li>
-<li><p><code>StringBuilder</code> 是 Java 1.5 中新增的，在能力上和 StringBuffer 没有本质区别，但是它去掉了线程安全的部分，有效减小了开销，是绝大部分情况下进行字符串拼接的首选。</p>
-</li>
-</ul>
-<p>StringBuffer和StringBuilder都实现了<code>AbstractStringBuilder</code>抽象类，拥有几乎一致对外提供的调用接口；其底层在内存中的存储方式与String相同，都是以一个有序的字符序列（char类型的数组）进行存储，不同点是StringBuffer/StringBuilder对象的值是可以改变的，并且值改变以后，对象引用不会发生改变;两者对象在构造过程中，首先按照默认大小申请一个字符数组，由于会不断加入新数据，当超过默认大小后，会创建一个更大的数组，并将原先的数组内容复制过来，再丢弃旧的数组。因此，对于较大对象的扩容会涉及大量的内存复制操作，如果能够预先评估大小，可提升性能。</p>
-<h1 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h1><ol>
-<li><p>在字符串内容不经常发生变化的业务场景优先使用String类。例如：常量声明、少量的字符串拼接操作等。如果有大量的字符串内容拼接，避免使用String与String之间的“+”操作，因为这样会产生大量无用的中间对象，耗费空间且执行效率低下（新建对象、回收对象花费大量时间）。</p>
-</li>
-<li><p>在频繁进行字符串的运算（如拼接、替换、删除等），并且运行在<strong>多线程环境</strong>下，建议使用StringBuffer，例如XML解析、HTTP参数解析与封装。</p>
-</li>
-<li><p>在频繁进行字符串的运算（如拼接、替换、删除等），并且运行在<strong>单线程环境</strong>下，建议使用StringBuilder，例如SQL语句拼装、JSON封装等。</p>
-</li>
-</ol>
-<h1 id="扩展回答"><a href="#扩展回答" class="headerlink" title="扩展回答"></a>扩展回答</h1><ul>
-<li>通过 String 和相关类，考察基本的线程安全设计与实现，各种基础编程实践。</li>
-<li>考察 JVM 对象缓存机制的理解以及如何良好地使用。</li>
-<li>考察 JVM 优化 Java 代码的一些技巧。</li>
-<li>String 相关类的演进，比如 Java 9 中实现的巨大变化。</li>
-</ul>
-<h2 id="一、字符串设计和实现考量"><a href="#一、字符串设计和实现考量" class="headerlink" title="一、字符串设计和实现考量"></a>一、字符串设计和实现考量</h2><p>前面提到过，<code>String</code> 是 Immutable 类的典型实现，<strong>原生的保证了基础线程安全</strong>，因为你无法对它内部数据进行任何修改，这种便利甚至体现在拷贝构造函数中，由于不可变，<strong>Immutable 对象在拷贝时不需要额外复制数据。</strong></p>
-<p>我们再来看看 <code>StringBuffer</code> 实现的一些细节，<strong>它的线程安全是通过把各种修改数据的方法都加上 synchronized 关键字实现的</strong>，非常直白。其实，这种简单粗暴的实现方式，非常适合我们常见的线程安全类实现，不必纠结于 synchronized 性能之类的，有人说“过早优化是万恶之源”，考虑可靠性、正确性和代码可读性才是大多数应用开发最重要的因素。</p>
-<p>为了实现修改字符序列的目的</p>
-<blockquote>
-<p>StringBuffer 和 StringBuilder 底层都是<strong>利用可修改的（char，JDK 9 以后是 byte）数组</strong>，二者都继承了 <code>AbstractStringBuilder</code>，里面包含了基本操作，区别仅在于最终的方法是否加了 synchronized。</p>
-</blockquote>
-<p>这个内部数组应该创建成多大的呢？</p>
-<blockquote>
-<p>如果太小，拼接的时候可能要重新创建足够大的数组；</p>
-<p>如果太大，又会浪费空间。</p>
-<p><strong>目前的实现是，构建时初始字符串长度加上16（这意味着，如果没有构建对象时输入最初的字符串，那么初始值就是 16）。</strong></p>
-<p>我们如果确定拼接会发生非常多次，而且大概是可预计的，那么就可以指定合适的大小，避免很多次扩容的开销。扩容会产生多重开销，因为要抛弃原有数组，创建新的（可以简单认为是倍数）数组，还要进行 arraycopy。</p>
-</blockquote>
-<p>在具体的代码书写中，应该如何选择呢？</p>
-<p>在没有线程安全问题的情况下，全部拼接操作是应该都用 StringBuilder 实现吗？毕竟这样书写的代码，还是要多敲很多字的，可读性也不理想，下面的对比非常明显。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String strByBuilder  = <span class="keyword">new</span> StringBuilder().append(<span class="string">"aa"</span>).append(<span class="string">"bb"</span>).append(<span class="string">"cc"</span>).append</span><br><span class="line">            (<span class="string">"dd"</span>).toString();</span><br><span class="line"><span class="comment">//考虑代码的可读性             </span></span><br><span class="line">String strByConcat = <span class="string">"aa"</span> + <span class="string">"bb"</span> + <span class="string">"cc"</span> + <span class="string">"dd"</span>;</span><br></pre></td></tr></table></figure>
-
-<p>其实，在通常情况下，没有必要过于担心，要相信 Java 还是非常智能的。</p>
-<p>我们来做个实验，把下面一段代码，利用不同版本的 JDK 编译，然后再反编译，例如：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StringConcat</span> </span>&#123;</span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">concat</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> str + “aa” + “bb”;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>先编译再反编译，比如使用不同版本的 JDK：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$&#123;JAVA_HOME&#125;</span>/bin/javac StringConcat.java</span><br><span class="line"><span class="variable">$&#123;JAVA_HOME&#125;</span>/bin/javap -v StringConcat.class</span><br></pre></td></tr></table></figure>
-
-<p>JDK 8 的输出片段如下，可以看到，非静态的字符创拼接逻辑在 JDK 8 中会自动被 javac 转换为 StringBuilder 操作；</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"> 0: new           <span class="comment">#2                  // class java/lang/StringBuilder</span></span><br><span class="line"> 3: dup</span><br><span class="line"> 4: invokespecial <span class="comment">#3                  // Method java/lang/StringBuilder."&lt;init&gt;":()V</span></span><br><span class="line"> 7: aload_0</span><br><span class="line"> 8: invokevirtual <span class="comment">#4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span></span><br><span class="line">11: ldc           <span class="comment">#5                  // String aa</span></span><br><span class="line">13: invokevirtual <span class="comment">#4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span></span><br><span class="line">16: ldc           <span class="comment">#6                  // String bb</span></span><br><span class="line">18: invokevirtual <span class="comment">#4                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;</span></span><br><span class="line">21: invokevirtual <span class="comment">#7                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;</span></span><br></pre></td></tr></table></figure>
-
-<p>而在 JDK 9 中，反编译的结果就会有点特别了，片段如下。</p>
-<p>在 JDK 9 里面，体现了思路的变化，为了更加统一字符串的操作优化，提供了StringConcatFactory作为一个统一的入口。</p>
-<p>Java 9 利用 InvokeDynamic，将字符串拼接的优化与 javac 生成的字节码解耦，假设未来 JVM 增强相关运行时实现，将不需要依赖 javac 的任何修改。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// concat method</span><br><span class="line">1: invokedynamic <span class="comment">#2,  0              // InvokeDynamic #0:makeConcatWithConstants:(Ljava/lang/String;)Ljava/lang/String;</span></span><br><span class="line"></span><br><span class="line">// ...</span><br><span class="line">// 实际是利用了MethodHandle,统一了入口</span><br><span class="line">0: <span class="comment">#15 REF_invokeStatic java/lang/invoke/StringConcatFactory.makeConcatWithConstants:(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/invoke/CallSite;</span></span><br></pre></td></tr></table></figure>
-
-<p>javac自动生成的普通代码未必是最优化的，但应对普通场景也足够了。</p>
-<p>总结：在日常编程中，保证程序的可读性、可维护性，往往比所谓的最优性能更重要，你可以根据实际需求酌情选择具体的编码方式。</p>
-<h2 id="二、字符串缓存"><a href="#二、字符串缓存" class="headerlink" title="二、字符串缓存"></a>二、字符串缓存</h2><p>我们粗略统计过，把常见应用进行堆转储（Dump Heap），然后分析对象组成，会发现平均 25% 的对象是字符串，并且其中约半数是重复的。如果能避免创建重复字符串，可以有效降低内存消耗和对象创建开销。</p>
-<p>String 在 Java 6 以后提供了 <code>intern()</code> 方法，目的是提示 JVM 把相应字符串缓存起来，以备重复使用。在我们创建字符串对象并调用 intern() 方法的时候，如果已经有缓存的字符串，就会返回缓存里的实例，否则将其缓存起来。一般来说，JVM 会将所有的类似“abc”这样的文本字符串，或者字符串常量之类缓存起来。</p>
-<p>看起来很不错是吧？但实际情况估计会让你大跌眼镜。一般使用 Java 6 这种历史版本，并不推荐大量使用 intern，为什么呢？魔鬼存在于细节中，被缓存的字符串是存在所谓 PermGen 里的，也就是臭名昭著的“永久代”，这个空间是很有限的，也基本不会被 FullGC 之外的垃圾收集照顾到。所以，如果使用不当，OOM 就会光顾。</p>
-<p>在后续版本中，这个缓存被放置在堆中，这样就极大避免了永久代占满的问题，甚至永久代在 JDK 8 中被 MetaSpace（元数据区）替代了。而且，默认缓存大小也在不断地扩大中，从最初的 1009，到 7u40 以后被修改为 60013。你可以使用下面的参数直接打印具体数字，可以拿自己的 JDK 立刻试验一下。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+PrintStringTableStatistics</span><br></pre></td></tr></table></figure>
-
-<p>你也可以使用下面的 JVM 参数手动调整大小，但是绝大部分情况下并不需要调整，除非你确定它的大小已经影响了操作效率。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:StringTableSize=N</span><br></pre></td></tr></table></figure>
-
-<p>Intern 是一种<strong>显式地排重机制</strong>，但是它也有一定的副作用，因为需要开发者写代码时明确调用，一是不方便，每一个都显式调用是非常麻烦的；另外就是我们很难保证效率，应用开发阶段很难清楚地预计字符串的重复情况，有人认为这是一种污染代码的实践。</p>
-<p>幸好在 Oracle JDK 8u20 之后，推出了一个新的特性，也就是 G1 GC 下的字符串排重。<strong>它是通过将相同数据的字符串指向同一份数据来做到的</strong>，是 JVM 底层的改变，并不需要 Java 类库做什么修改。</p>
-<p>注意这个功能目前是默认关闭的，你需要使用下面参数开启，并且记得指定使用 G1 GC：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+UseStringDeduplication</span><br></pre></td></tr></table></figure>
-
-<p>前面说到的几个方面，只是 Java 底层对字符串各种优化的一角，在运行时，字符串的一些基础操作会直接利用 JVM 内部的 Intrinsic 机制，往往运行的就是特殊优化的本地代码，而根本就不是 Java 代码生成的字节码。Intrinsic 可以简单理解为，是一种利用 native 方式 hard-coded 的逻辑，算是一种特别的内联，很多优化还是需要直接使用特定的 CPU 指令，具体可以看相关源码，搜索“string”以查找相关 Intrinsic 定义。当然，你也可以在启动实验应用时，使用下面参数，了解 intrinsic 发生的状态。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">-XX:+PrintCompilation -XX:+UnlockDiagnosticVMOptions -XX:+PrintInlining</span><br><span class="line">    //样例输出片段    </span><br><span class="line">        180    3       3       java.lang.String::charAt (25 bytes)  </span><br><span class="line">                                  @ 1   java.lang.String::isLatin1 (19 bytes)   </span><br><span class="line">                                  ...  </span><br><span class="line">                                  @ 7 java.lang.StringUTF16::getChar (60 bytes) intrinsic</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="三、String自身的演化"><a href="#三、String自身的演化" class="headerlink" title="三、String自身的演化"></a>三、String自身的演化</h2><p>如果你仔细观察过 Java 的字符串，在历史版本中，它是使用 char 数组来存数据的，这样非常直接。但是 Java 中的 char 是两个 bytes 大小，拉丁语系语言的字符，根本就不需要太宽的 char，这样无区别的实现就造成了一定的浪费。<strong>密度是编程语言平台永恒的话题</strong>，因为归根结底绝大部分任务是要来操作数据的。</p>
-<p>其实在 Java 6 的时候，Oracle JDK 就提供了压缩字符串的特性，但是这个特性的实现并不是开源的，而且在实践中也暴露出了一些问题，所以在最新的 JDK 版本中已经将它移除了。</p>
-<p>在 Java 9 中，我们引入了 Compact Strings 的设计，对字符串进行了大刀阔斧的改进。<strong>将数据存储方式从 char 数组，改变为一个 byte 数组加上一个标识编码的所谓 coder，并且将相关字符串操作类都进行了修改。</strong>另外，所有相关的 Intrinsic 之类也都进行了重写，以保证没有任何性能损失。</p>
-<p>虽然底层实现发生了这么大的改变，但是 Java 字符串的行为并没有任何大的变化，所以这个特性对于绝大部分应用来说是透明的，绝大部分情况不需要修改已有代码。</p>
-<p>当然，在极端情况下，字符串也出现了一些能力退化，比如最大字符串的大小。你可以思考下，原来 char 数组的实现，字符串的最大长度就是数组本身的长度限制，但是替换成 byte 数组，同样数组长度下，存储能力是退化了一倍的！还好这是存在于理论中的极限，还没有发现现实应用受此影响。</p>
-<p>在通用的性能测试和产品实验中，我们能非常明显地看到<strong>紧凑字符串</strong>带来的优势，即<strong>更小的内存占用、更快的操作速度。</strong></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/13/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/5-String%E3%80%81StringBuffer%E3%80%81StringBuilder%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Java/java核心技术面试/4-强引用、软引用、弱引用、幻象引用有什么区别？" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/13/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/4-%E5%BC%BA%E5%BC%95%E7%94%A8%E3%80%81%E8%BD%AF%E5%BC%95%E7%94%A8%E3%80%81%E5%BC%B1%E5%BC%95%E7%94%A8%E3%80%81%E5%B9%BB%E8%B1%A1%E5%BC%95%E7%94%A8%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/">4 | 强引用、软引用、弱引用、幻象引用有什么区别？</a>
-    </h1>
-  
-
-        
-        <a href="/2020/02/13/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/4-%E5%BC%BA%E5%BC%95%E7%94%A8%E3%80%81%E8%BD%AF%E5%BC%95%E7%94%A8%E3%80%81%E5%BC%B1%E5%BC%95%E7%94%A8%E3%80%81%E5%B9%BB%E8%B1%A1%E5%BC%95%E7%94%A8%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/" class="archive-article-date">
-  	<time datetime="2020-02-13T03:12:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-13</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在 Java 语言中，除了原始数据类型的变量，其他所有都是所谓的引用类型，指向各种不同的对象，理解引用对于掌握 Java 对象生命周期和 JVM 内部相关机制非常有帮助。</p>
-<p>引用出现的根源是由于GC内存回收的基本原理—GC回收内存本质上是回收对象，而目前比较流行的回收算法是<strong>可达性分析算法</strong>，从GC Roots开始按照一定的逻辑判断一个对象是否可达，不可达的话就说明这个对象已死（除此之外另外一种常见的算法就是<strong>引用计数法</strong>，但是这种算法有个问题就是不能解决相互引用的问题）。</p>
-<p>在大多数应用开发中，很少直接操作各种不同引用，虽然我们使用的类库、框架可能利用了其机制。这个问题既考察了我们对基础概念的理解，也考察了对底层对象生命周期、垃圾收集机制等的掌握。</p>
-<p>充分理解这些引用，对于我们设计可靠的缓存等框架，或者诊断应用 OOM 等问题，会很有帮助。比如，诊断 MySQL connector-j 驱动在特定模式下（useCompression=true）的内存泄漏问题，就需要我们理解怎么排查幻象引用的堆积问题。</p>
-<p>基于此Java向用户提供了四种可用的引用：即本文章讲解到的几种，同时还提供了一种不可被使用的引用—<code>FinalReference</code>，这个引用是和析构函数密切相关的）。</p>
-<p>如果你去查看源码你会发现，这些类实现的核心是<code>Reference</code>与<code>ReferenceQueue</code>（更通俗地说引用队列）两个类，而且这两个类也特别的简单。</p>
-<ul>
-<li><p>Reference类似一个链表结构，通过创建一个守护线程来执行对应引用的清除、Cleaner.clean（如果传入的对象是该类的话）、以及引用的入队操作（需要在创建引用的时候制定一个引用队列）；</p>
-</li>
-<li><p>ReferenceQueue这是制定了引用队列的一些具体操作，简单的来说它也是一个链表结构，并提供了一些基本的链表操作）。而除了强引用外其它的都是继承于此，通过这样的类约束了引用的相关内容，便于和GC进行交互。</p>
-</li>
-</ul>
-<h1 id="一、典型回答"><a href="#一、典型回答" class="headerlink" title="一、典型回答"></a>一、典型回答</h1><p>不同的引用类型，主要体现的是<u><strong>对象不同的可达性（reachable）状态和对垃圾收集的影响。</strong></u></p>
-<h2 id="1-强引用（“Strong”-Reference）"><a href="#1-强引用（“Strong”-Reference）" class="headerlink" title="1.强引用（“Strong” Reference）"></a>1.强引用（“Strong” Reference）</h2><p>所谓强引用（“Strong” Reference），就是我们最常见的普通对象引用，只要还有强引用指向一个对象，就能表明对象还“活着”，垃圾收集器不会碰这种对象。</p>
-<blockquote>
-<p>我们平常典型编码Object obj = new Object()中的obj就是强引用。通过关键字new创建的对象所关联的引用就是强引用。 </p>
-<p>当JVM内存空间不足，JVM宁愿抛出OutOfMemoryError运行时错误（OOM），使程序异常终止，也不会靠随意回收具有强引用的“存活”对象来解决内存不足的问题。</p>
-<p>对于一个普通的对象，如果没有其他的引用关系，只要超过了引用的作用域或者显式地将相应（强）引用赋值为 null，就是可以被垃圾收集的了，具体回收时机还是要看垃圾收集策略。</p>
-</blockquote>
-<h2 id="2-软引用（Soft-Reference）"><a href="#2-软引用（Soft-Reference）" class="headerlink" title="2.软引用（Soft Reference）"></a>2.软引用（Soft Reference）</h2><p>软引用（SoftReference），是一种相对强引用弱化一些的引用，可以让对象豁免一些垃圾收集，只有当 JVM 认为内存不足时，才会去试图回收软引用指向的对象。JVM 会确保在抛出 OutOfMemoryError 之前，清理软引用指向的对象。软引用通常用来实现内存敏感的缓存，如果还有空闲内存，就可以暂时保留缓存，当内存不足时清理掉，这样就保证了使用缓存的同时，不会耗尽内存。</p>
-<blockquote>
-<p>软引用通过SoftReference类实现。 软引用的生命周期比强引用短一些。只有当 JVM 认为内存不足时，才会去试图回收软引用指向的对象：即JVM 会确保在抛出 OutOfMemoryError 之前，清理软引用指向的对象。（会在最近的一次GC的时候被回收）</p>
-<p>软引用可以和一个引用队列（ReferenceQueue）联合使用，如果软引用所引用的对象被垃圾回收器回收，Java虚拟机就会把这个软引用加入到与之关联的引用队列中。后续，我们可以调用ReferenceQueue的poll()方法来检查是否有它所关心的对象被回收。如果队列为空，将返回一个null,否则该方法返回队列中前面的一个Reference对象。</p>
-</blockquote>
-<blockquote>
-<p>应用场景：软引用通常用来实现内存敏感的缓存。如果还有空闲内存，就可以暂时保留缓存，当内存不足时清理掉，这样就保证了使用缓存的同时，不会耗尽内存。图片缓存框架中，“内存缓存”中的图片是以这种引用来保存，使得JVM在发生OOM之前，可以回收这部分缓存</p>
-</blockquote>
-<h2 id="3-弱引用（Weak-Reference）"><a href="#3-弱引用（Weak-Reference）" class="headerlink" title="3.弱引用（Weak Reference）"></a>3.弱引用（Weak Reference）</h2><p>弱引用（WeakReference）并不能使对象豁免垃圾收集，仅仅是提供一种访问在弱引用状态下对象的途径。这就可以用来构建一种没有特定约束的关系，比如，维护一种非强制性的映射关系，如果试图获取时对象还在，就使用它，否则重现实例化。它同样是很多缓存实现的选择。</p>
-<blockquote>
-<p>弱引用通过WeakReference类实现。 弱引用的生命周期比软引用短。在垃圾回收器线程扫描它所管辖的内存区域的过程中，一旦发现了具有弱引用的对象，不管当前内存空间足够与否，都会回收它的内存。由于垃圾回收器是一个优先级很低的线程，因此不一定会很快回收弱引用的对象。弱引用可以和一个引用队列（ReferenceQueue）联合使用，如果弱引用所引用的对象被垃圾回收，Java虚拟机就会把这个弱引用加入到与之关联的引用队列中。</p>
-</blockquote>
-<blockquote>
-<p>应用场景：弱应用同样可用于内存敏感的缓存。例如Java的TheardLocal与动态代理都是基于这样的一个引用实现的，一般针对那些比较敏感的数据。</p>
-</blockquote>
-<h2 id="4-幻想引用（虚引用）"><a href="#4-幻想引用（虚引用）" class="headerlink" title="4.幻想引用（虚引用）"></a>4.幻想引用（虚引用）</h2><p>对于幻象引用，有时候也翻译成虚引用，<strong>你不能通过它访问对象</strong>。幻象引用仅仅是提供了一种确保对象被 finalize 以后，做某些事情的机制，比如，通常用来做所谓的 Post-Mortem (事后)清理机制，比如Java 平台自身 Cleaner 机制等，也有人利用幻象引用监控对象的创建和销毁。</p>
-<blockquote>
-<p>虚引用也叫幻象引用，通过PhantomReference类来实现。无法通过虚引用访问对象的任何属性或函数。幻想引用是针对那些已经执行完析构函数之后，仍然需要在执行一些其它操作的对象。如果一个对象仅持有虚引用，那么它就和没有任何引用一样，在任何时候都可能被垃圾回收器回收。虚引用必须和引用队列 （ReferenceQueue）联合使用。当垃圾回收器准备回收一个对象时，如果发现它还有虚引用，就会在回收对象的内存之前，把这个虚引用加入到与之关联的引用队列中。<br>ReferenceQueue queue = new ReferenceQueue ();<br>PhantomReference pr = new PhantomReference (object, queue);<br>程序可以通过判断引用队列中是否已经加入了虚引用，来了解被引用的对象是否将要被垃圾回收。如果程序发现某个虚引用已经被加入到引用队列，那么就可以在所引用的对象的内存被回收之前采取一些程序行动。</p>
-</blockquote>
-<blockquote>
-<p>应用场景：可用来跟踪对象被垃圾回收器回收的活动，当一个虚引用关联的对象被垃圾收集器回收之前会收到一条系统通知。比如资源对象的关闭就可以用到这个引用。</p>
-</blockquote>
-<h1 id="二、对象可达性状态流转分析"><a href="#二、对象可达性状态流转分析" class="headerlink" title="二、对象可达性状态流转分析"></a>二、对象可达性状态流转分析</h1><p>下图简单总结了对象生命周期和不同可达性状态，以及不同状态可能的改变关系，<br><img src="https://static001.geekbang.org/resource/image/36/b0/36d3c7b158eda9421ef32463cb4d4fb0.png" alt=""></p>
-<p>上图的具体状态是 Java 定义的不同可达性级别（reachability level），具体如下：</p>
-<ul>
-<li><strong>强可达（Strongly Reachable）</strong>，就是当一个对象可以有一个或多个线程可以不通过各种引用访问到的情况。比如，我们新创建一个对象，那么创建它的线程对它就是强可达。</li>
-<li><strong>软可达（Softly Reachable）</strong>，就是当我们只能通过软引用才能访问到对象的状态。</li>
-<li><strong>弱可达（Weakly Reachable）</strong>，类似前面提到的，就是无法通过强引用或者软引用访问，只能通过弱引用访问时的状态。这是十分临近 finalize 状态的时机，当弱引用被清除的时候，就符合 finalize 的条件了。</li>
-<li><strong>幻象可达（Phantom Reachable）</strong>，上面流程图已经很直观了，就是没有强、软、弱引用关联，并且 finalize 过了，只有幻象引用指向这个对象的时候。</li>
-<li><strong>不可达（unreachable）</strong>，意味着对象可以被清除了。</li>
-</ul>
-<p>判断对象可达性，是 JVM 垃圾收集器决定如何处理对象的一部分考虑。</p>
-<p>所有引用类型，都是抽象类 java.lang.ref.Reference 的子类，你可能注意到它提供了 get() 方法：</p>
-<p><img src="https://static001.geekbang.org/resource/image/ba/3e/bae702d46c665e12113f5abd876eb53e.png" alt=""></p>
-<p>除了幻象引用（因为 get 永远返回 null），如果对象还没有被销毁，都可以通过 get 方法获取原有对象。这意味着，利用软引用和弱引用，我们可以将访问到的对象，重新指向强引用，也就是人为的改变了对象的可达性状态！这也是为什么我在上面图里有些地方画了双向箭头。</p>
-<p>所以，对于软引用、弱引用之类，垃圾收集器可能会存在二次确认的问题，以保证处于弱引用状态的对象，没有改变为强引用。</p>
-<p>但是，你觉得这里有没有可能出现什么问题呢？</p>
-<p>不错，如果我们错误的保持了强引用（比如，赋值给了 static 变量），那么对象可能就没有机会变回类似弱引用的可达性状态了，就会产生内存泄漏。所以，检查弱引用指向对象是否被垃圾收集，也是诊断是否有特定内存泄漏的一个思路，如果我们的框架使用到弱引用又怀疑有内存泄漏，就可以从这个角度检查。</p>
-<h1 id="三、引用队列（ReferenceQueue）的使用"><a href="#三、引用队列（ReferenceQueue）的使用" class="headerlink" title="三、引用队列（ReferenceQueue）的使用"></a>三、引用队列（ReferenceQueue）的使用</h1><p>谈到各种引用的编程，就必然要提到<strong>引用队列</strong>。我们在创建各种引用并关联到响应对象时，可以选择是否需要关联引用队列，<strong>JVM 会在特定时机将引用 enqueue 到队列里</strong>，我们可以从队列里获取引用（remove 方法在这里实际是有获取的意思）进行相关后续逻辑。尤其是幻象引用，get 方法只返回 null，如果再不指定引用队列，基本就没有意义了。</p>
-<p>看看下面的示例代码。利用引用队列，我们可以在对象处于相应状态时（对于幻象引用，就是前面说的被 finalize 了，处于幻象可达状态），执行后期处理逻辑。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Object counter = <span class="keyword">new</span> Object();</span><br><span class="line">ReferenceQueue refQueue = <span class="keyword">new</span> ReferenceQueue&lt;&gt;();</span><br><span class="line">PhantomReference&lt;Object&gt; p = <span class="keyword">new</span> PhantomReference&lt;&gt;(counter, refQueue);</span><br><span class="line">counter = <span class="keyword">null</span>;</span><br><span class="line">System.gc();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// Remove是一个阻塞方法，可以指定timeout，或者选择一直阻塞</span></span><br><span class="line">    Reference&lt;Object&gt; ref = refQueue.remove(<span class="number">1000L</span>);</span><br><span class="line">    <span class="keyword">if</span> (ref != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// do something</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">    <span class="comment">// Handle it</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="四、显示地影响软引用垃圾收集"><a href="#四、显示地影响软引用垃圾收集" class="headerlink" title="四、显示地影响软引用垃圾收集"></a>四、显示地影响软引用垃圾收集</h1><p>前面泛泛提到了引用对垃圾收集的影响，尤其是软引用，到底 JVM 内部是怎么处理它的，其实并不是非常明确。那么我们能不能使用什么方法来影响软引用的垃圾收集呢？</p>
-<p>答案是有的。</p>
-<p>软引用通常会在最后一次引用后，还能保持一段时间，默认值是根据堆剩余空间计算的（以 M bytes 为单位）。从 Java 1.3.1 开始，提供了 <code>-XX:SoftRefLRUPolicyMSPerMB</code> 参数，我们可以以毫秒（milliseconds）为单位设置。比如，下面这个示例就是设置为 3 秒（3000 毫秒）。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:SoftRefLRUPolicyMSPerMB=3000</span><br></pre></td></tr></table></figure>
-
-<p>这个剩余空间，其实会受不同 JVM 模式影响：</p>
-<ul>
-<li><p>对于 Client 模式，比如通常的 Windows 32 bit JDK，剩余空间是计算当前堆里空闲的大小，所以更加倾向于回收；</p>
-</li>
-<li><p>而对于 server 模式 JVM，则是根据 -Xmx 指定的最大值来计算。</p>
-</li>
-</ul>
-<p>本质上，这个行为还是个黑盒，取决于 JVM 实现，即使是上面提到的参数，在新版的 JDK 上也未必有效，另外 Client 模式的 JDK 已经逐步退出历史舞台。所以在我们应用时，可以参考类似设置，但不要过于依赖它。</p>
-<h1 id="五、诊断JVM引用情况"><a href="#五、诊断JVM引用情况" class="headerlink" title="五、诊断JVM引用情况"></a>五、诊断JVM引用情况</h1><p>如果你怀疑应用存在引用（或 finalize）导致的回收问题，可以有很多工具或者选项可供选择，比如 HotSpot JVM 自身便提供了明确的选项（<code>PrintReferenceGC</code>）去获取相关信息，我指定了下面选项去使用 <code>JDK 8</code> 运行一个样例应用：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintReferenceGC</span><br></pre></td></tr></table></figure>
-
-<p>这是 <code>JDK 8</code> 使用 ParrallelGC 收集的垃圾收集日志，各种引用数量非常清晰。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0.403: [GC (Allocation Failure) 0.871: [SoftReference, 0 refs, 0.0000393 secs]0.871: [WeakReference, 8 refs, 0.0000138 secs]0.871: [FinalReference, 4 refs, 0.0000094 secs]0.871: [PhantomReference, 0 refs, 0 refs, 0.0000085 secs]0.871: [JNI Weak Reference, 0.0000071 secs][PSYoungGen: 76272K-&gt;10720K(141824K)] 128286K-&gt;128422K(316928K), 0.4683919 secs] [Times: user=1.17 sys=0.03, real=0.47 secs]</span><br></pre></td></tr></table></figure>
-
-<p><strong><u>注意：JDK 9 对 JVM 和垃圾收集日志进行了广泛的重构</u></strong>，类似 PrintGCTimeStamps 和 PrintReferenceGC 已经不再存在，</p>
-<h1 id="六、Reachability-Fence"><a href="#六、Reachability-Fence" class="headerlink" title="六、Reachability Fence"></a>六、Reachability Fence</h1><p>除了前面介绍的几种基本引用类型，我们也可以通过底层 API 来达到强引用的效果，这就是所谓的设置 <code>reachability fence</code>。</p>
-<p>为什么需要这种机制呢？</p>
-<p>考虑一下这样的场景，按照 Java 语言规范，如果一个对象没有指向强引用，就符合垃圾收集的标准，有些时候，对象本身并没有强引用，但是也许它的部分属性还在被使用，这样就导致诡异的问题，所以我们需要一个方法，在没有强引用情况下，通知 JVM 对象是在被使用的。说起来有点绕，我们来看看 Java 9 中提供的案例。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Resource</span> </span>&#123;</span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">static</span> ExternalResource[] externalResourceArray = ...</span><br><span class="line"> <span class="keyword">int</span> myIndex; Resource(...) &#123;</span><br><span class="line">     myIndex = ...</span><br><span class="line">     externalResourceArray[myIndex] = ...;</span><br><span class="line">     ...</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">finalize</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     externalResourceArray[myIndex] = <span class="keyword">null</span>;</span><br><span class="line">     ...</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">action</span><span class="params">()</span> </span>&#123;</span><br><span class="line"> <span class="keyword">try</span> &#123;</span><br><span class="line">     <span class="comment">// 需要被保护的代码</span></span><br><span class="line">     <span class="keyword">int</span> i = myIndex;</span><br><span class="line">     Resource.update(externalResourceArray[i]);</span><br><span class="line"> &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">     <span class="comment">// 调用reachbilityFence，明确保障对象strongly reachable</span></span><br><span class="line">     Reference.reachabilityFence(<span class="keyword">this</span>);</span><br><span class="line"> &#125;</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">(ExternalResource ext)</span> </span>&#123;</span><br><span class="line">    ext.status = ...;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>方法 action 的执行，依赖于对象的部分属性，所以被特定保护了起来。</p>
-<p>否则，如果我们在代码中像下面这样调用，那么就可能会出现困扰，因为没有强引用指向我们创建出来的 Resource 对象，JVM 对它进行 finalize 操作是完全合法的。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Resource().action()</span><br></pre></td></tr></table></figure>
-
-<p>类似的书写结构，在异步编程中似乎是很普遍的，因为异步编程中往往不会用传统的<code>“执行 -&gt; 返回 -&gt; 使用”</code>的结构。</p>
-<p>在 Java 9 之前，实现类似功能相对比较繁琐，有的时候需要采取一些比较隐晦的小技巧。幸好，<code>java.lang.ref.Reference</code> 给我们提供了新方法，它是 JEP 193: Variable Handles 的一部分，将 Java 平台底层的一些能力暴露出来：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">reachabilityFence</span><span class="params">(Object ref)</span></span></span><br></pre></td></tr></table></figure>
-
-<p>在 JDK 源码中，<code>reachabilityFence</code> 大多使用在 Executors 或者类似新的 HTTP/2 客户端代码中，大部分都是异步调用的情况。编程中，可以按照上面这个例子，将需要 reachability 保障的代码段利用 try-finally 包围起来，在 finally 里明确声明对象强可达。</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文章主要说明了 Java 语言提供的几种引用类型、相应可达状态以及对于 JVM 工作的意义，并分析了引用队列使用的一些实际情况，最后介绍了在新的编程模式下，如何利用 API 去保障对象不被意外回收。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/13/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/4-%E5%BC%BA%E5%BC%95%E7%94%A8%E3%80%81%E8%BD%AF%E5%BC%95%E7%94%A8%E3%80%81%E5%BC%B1%E5%BC%95%E7%94%A8%E3%80%81%E5%B9%BB%E8%B1%A1%E5%BC%95%E7%94%A8%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-leetcode/leetcode刷题目录" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/12/leetcode/leetcode%E5%88%B7%E9%A2%98%E7%9B%AE%E5%BD%95/">leetcode刷题目录</a>
-    </h1>
-  
-
-        
-        <a href="/2020/02/12/leetcode/leetcode%E5%88%B7%E9%A2%98%E7%9B%AE%E5%BD%95/" class="archive-article-date">
-  	<time datetime="2020-02-12T10:06:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>按照类型去刷题，每种类型从简单到难去做一遍</p>
-<p>在LeetCode上通过标签筛选不一样的</p>
-<p>答案看不懂就看解题视频，直接LeetCode+题号搜索</p>
-<p>刷题目录 [<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode%20%E9%A2%98%E8%A7%A3%20-%20%E7%9B%AE%E5%BD%95.md]" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode%20%E9%A2%98%E8%A7%A3%20-%20%E7%9B%AE%E5%BD%95.md]</a>(<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 目录.md)</p>
-<p>栈和队列（0/6）</p>
-<p>[1. 用栈实现队列](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 栈和队列.md#1-用栈实现队列)</p>
-<p>[2. 用队列实现栈](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 栈和队列.md#2-用队列实现栈)</p>
-<p>[3. 最小值栈](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 栈和队列.md#3-最小值栈)</p>
-<p>[4. 用栈实现括号匹配](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 栈和队列.md#4-用栈实现括号匹配)</p>
-<p>[5. 数组中元素与下一个比它大的元素之间的距离](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 栈和队列.md#5-数组中元素与下一个比它大的元素之间的距离)</p>
-<p>[6. 循环数组中比当前元素大的下一个元素](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 栈和队列.md#6-循环数组中比当前元素大的下一个元素)</p>
-<p>数组与矩阵（0/12）</p>
-<p>[1. 把数组中的 0 移到末尾](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#1-把数组中的-0-移到末尾)</p>
-<p>[2. 改变矩阵维度](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#2-改变矩阵维度)</p>
-<p>[3. 找出数组中最长的连续 1](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#3-找出数组中最长的连续-1)</p>
-<p>[4. 有序矩阵查找](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#4-有序矩阵查找)</p>
-<p>[5. 有序矩阵的 Kth Element](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#5-有序矩阵的-kth-element)</p>
-<p>[6. 一个数组元素在 [1, n] 之间，其中一个数被替换为另一个数，找出重复的数和丢失的数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#6-一个数组元素在-[1,-n]-之间，其中一个数被替换为另一个数，找出重复的数和丢失的数)</p>
-<p>[7. 找出数组中重复的数，数组值在 [1, n] 之间](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#7-找出数组中重复的数，数组值在-[1,-n]-之间)</p>
-<p>[8. 数组相邻差值的个数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#8-数组相邻差值的个数)</p>
-<p>[9. 数组的度](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#9-数组的度)</p>
-<p>[10. 对角元素相等的矩阵](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#10-对角元素相等的矩阵)</p>
-<p>[11. 嵌套数组](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#11-嵌套数组)</p>
-<p>[12. 分隔数组](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#12-分隔数组)</p>
-<p>链表（5/10）</p>
-<p>[1. 找出两个链表的交点](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#1-找出两个链表的交点)</p>
-<p>[2. 链表反转](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#2-链表反转)</p>
-<p>[3. 归并两个有序的链表](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#3-归并两个有序的链表)</p>
-<p>[4. 从有序链表中删除重复节点](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#4-从有序链表中删除重复节点)(1.21)</p>
-<p>[5. 删除链表的倒数第 n 个节点](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#5-删除链表的倒数第-n-个节点)(1.22)</p>
-<p>[6. 交换链表中的相邻结点](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#6-交换链表中的相邻结点)</p>
-<p>[7. 链表求和](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#7-链表求和)</p>
-<p>[8. 回文链表](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#8-回文链表)</p>
-<p>[9. 分隔链表](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#9-分隔链表)</p>
-<p>[10. 链表元素按奇偶聚集](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#10-链表元素按奇偶聚集)</p>
-<p>位运算（0/13）</p>
-<p>[1. 统计两个数的二进制表示有多少位不同](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#1-统计两个数的二进制表示有多少位不同)</p>
-<p>[2. 数组中唯一一个不重复的元素](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#2-数组中唯一一个不重复的元素)</p>
-<p>[3. 找出数组中缺失的那个数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#3-找出数组中缺失的那个数)</p>
-<p>[4. 数组中不重复的两个元素](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#4-数组中不重复的两个元素)</p>
-<p>[5. 翻转一个数的比特位](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#5-翻转一个数的比特位)</p>
-<p>[6. 不用额外变量交换两个整数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#6-不用额外变量交换两个整数)</p>
-<p>[7. 判断一个数是不是 2 的 n 次方](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#7-判断一个数是不是-2-的-n-次方)</p>
-<p>[8. 判断一个数是不是 4 的 n 次方](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#8–判断一个数是不是-4-的-n-次方)</p>
-<p>[9. 判断一个数的位级表示是否不会出现连续的 0 和 1](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#9-判断一个数的位级表示是否不会出现连续的-0-和-1)</p>
-<p>[10. 求一个数的补码](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#10-求一个数的补码)</p>
-<p>[11. 实现整数的加法](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#11-实现整数的加法)</p>
-<p>[12. 字符串数组最大乘积](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#12-字符串数组最大乘积)</p>
-<p>[13. 统计从 0 ~ n 每个数的二进制表示中 1 的个数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#13-统计从-0-~-n-每个数的二进制表示中-1-的个数)</p>
-<p>图（0/4）</p>
-<ul>
-<li><p>[二分图](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 图.md#二分图)</p>
-</li>
-<li><p>[1. 判断是否为二分图](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 图.md#1-判断是否为二分图)</p>
-</li>
-<li><p>[拓扑排序](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 图.md#拓扑排序)</p>
-</li>
-<li><p>[1. 课程安排的合法性](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 图.md#1-课程安排的合法性)</p>
-<p>[2. 课程安排的顺序](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 图.md#2-课程安排的顺序)</p>
-</li>
-<li><p>[并查集](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 图.md#并查集)</p>
-</li>
-<li><p>[1. 冗余连接](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 图.md#1-冗余连接)</p>
-</li>
-</ul>
-<p>树（0/31）</p>
-<ul>
-<li><p>[递归](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#递归)（0/14）</p>
-</li>
-<li><p>[1. 树的高度](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#1-树的高度)</p>
-<p>[2. 平衡树](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#2-平衡树)</p>
-<p>[3. 两节点的最长路径](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#3-两节点的最长路径)</p>
-<p>[4. 翻转树](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#4-翻转树)</p>
-<p>[5. 归并两棵树](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#5-归并两棵树)</p>
-<p>[6. 判断路径和是否等于一个数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#6-判断路径和是否等于一个数)</p>
-<p>[7. 统计路径和等于一个数的路径数量](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#7-统计路径和等于一个数的路径数量)</p>
-<p>[8. 子树](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#8-子树)</p>
-<p>[9. 树的对称](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#9-树的对称)</p>
-<p>[10. 最小路径](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#10-最小路径)</p>
-<p>[11. 统计左叶子节点的和](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#11-统计左叶子节点的和)</p>
-<p>[12. 相同节点值的最大路径长度](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#12-相同节点值的最大路径长度)</p>
-<p>[13. 间隔遍历](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#13-间隔遍历)</p>
-<p>[14. 找出二叉树中第二小的节点](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#14-找出二叉树中第二小的节点)</p>
-</li>
-<li><p>[层次遍历](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#层次遍历)（0/2）</p>
-</li>
-<li><p>[1. 一棵树每层节点的平均数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#1-一棵树每层节点的平均数)</p>
-<p>[2. 得到左下角的节点](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#2-得到左下角的节点)</p>
-</li>
-<li><p>[前中后序遍历](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#前中后序遍历)（0/3）</p>
-</li>
-<li><p>[1. 非递归实现二叉树的前序遍历](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#1-非递归实现二叉树的前序遍历)</p>
-<p>[2. 非递归实现二叉树的后序遍历](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#2-非递归实现二叉树的后序遍历)</p>
-<p>[3. 非递归实现二叉树的中序遍历](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#3-非递归实现二叉树的中序遍历)</p>
-</li>
-<li><p>[BST](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#bst)（0/10）</p>
-</li>
-<li><p>[1. 修剪二叉查找树](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#1-修剪二叉查找树)</p>
-<p>[2. 寻找二叉查找树的第 k 个元素](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#2-寻找二叉查找树的第-k-个元素)</p>
-<p>[3. 把二叉查找树每个节点的值都加上比它大的节点的值](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#3-把二叉查找树每个节点的值都加上比它大的节点的值)</p>
-<p>[4. 二叉查找树的最近公共祖先](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#4-二叉查找树的最近公共祖先)</p>
-<p>[5. 二叉树的最近公共祖先](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#5-二叉树的最近公共祖先)</p>
-<p>[6. 从有序数组中构造二叉查找树](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#6-从有序数组中构造二叉查找树)</p>
-<p>[7. 根据有序链表构造平衡的二叉查找树](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#7-根据有序链表构造平衡的二叉查找树)</p>
-<p>[8. 在二叉查找树中寻找两个节点，使它们的和为一个给定值](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#8-在二叉查找树中寻找两个节点，使它们的和为一个给定值)</p>
-<p>[9. 在二叉查找树中查找两个节点之差的最小绝对值](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#9-在二叉查找树中查找两个节点之差的最小绝对值)</p>
-<p>[10. 寻找二叉查找树中出现次数最多的值](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#10-寻找二叉查找树中出现次数最多的值)</p>
-</li>
-<li><p>[Trie](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#trie)（0/2）</p>
-</li>
-<li><p>[1. 实现一个 Trie](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#1-实现一个-trie)</p>
-<p>[2. 实现一个 Trie，用来求前缀和](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#2-实现一个-trie，用来求前缀和)</p>
-</li>
-</ul>
-<p>字符串（0/9）</p>
-<p>[1. 字符串循环移位包含](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 字符串.md#1-字符串循环移位包含)</p>
-<p>[2. 字符串循环移位](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 字符串.md#2-字符串循环移位)</p>
-<p>[3. 字符串中单词的翻转](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 字符串.md#3-字符串中单词的翻转)</p>
-<p>[4. 两个字符串包含的字符是否完全相同](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 字符串.md#4-两个字符串包含的字符是否完全相同)</p>
-<p>[5. 计算一组字符集合可以组成的回文字符串的最大长度](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 字符串.md#5-计算一组字符集合可以组成的回文字符串的最大长度)</p>
-<p>[6. 字符串同构](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 字符串.md#6-字符串同构)</p>
-<p>[7. 回文子字符串个数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 字符串.md#7-回文子字符串个数)</p>
-<p>[8. 判断一个整数是否是回文数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 字符串.md#8-判断一个整数是否是回文数)</p>
-<p>[9. 统计二进制字符串中连续 1 和连续 0 数量相同的子字符串个数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 字符串.md#9-统计二进制字符串中连续-1-和连续-0-数量相同的子字符串个数)</p>
-<p>哈希表（0/4）</p>
-<p>[1. 数组中两个数的和为给定值](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 哈希表.md#1-数组中两个数的和为给定值)</p>
-<p>[2. 判断数组是否含有重复元素](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 哈希表.md#2-判断数组是否含有重复元素)</p>
-<p>[3. 最长和谐序列](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 哈希表.md#3-最长和谐序列)</p>
-<p>[4. 最长连续序列](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 哈希表.md#4-最长连续序列)</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">leetcode</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/leetcode//" class="article-tag-list-link color4">leetcode</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/12/leetcode/leetcode%E5%88%B7%E9%A2%98%E7%9B%AE%E5%BD%95/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Java/java核心技术面试/3-0-谈谈final、finally、-finalize有什么不同？" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/11/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/3-0-%E8%B0%88%E8%B0%88final%E3%80%81finally%E3%80%81-finalize%E6%9C%89%E4%BB%80%E4%B9%88%E4%B8%8D%E5%90%8C%EF%BC%9F/">3.0 | 谈谈final、finally、 finalize有什么不同？</a>
-    </h1>
-  
-
-        
-        <a href="/2020/02/11/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/3-0-%E8%B0%88%E8%B0%88final%E3%80%81finally%E3%80%81-finalize%E6%9C%89%E4%BB%80%E4%B9%88%E4%B8%8D%E5%90%8C%EF%BC%9F/" class="archive-article-date">
-  	<time datetime="2020-02-11T05:45:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-11</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="典型回答（从语法和使用实践角度出发）"><a href="#典型回答（从语法和使用实践角度出发）" class="headerlink" title="典型回答（从语法和使用实践角度出发）"></a>典型回答（从语法和使用实践角度出发）</h1><ul>
-<li>final 可以用来修饰类、方法、变量，分别有不同的意义，final 修饰的 class 代表不可以继承扩展，final 的变量是不可以修改的，而 final 的方法也是不可以重写的（override）。</li>
-<li>finally 则是 Java 保证重点代码一定要被执行的一种机制。我们可以使用 try-finally 或者 try-catch-finally 来进行类似关闭 JDBC 连接、保证 unlock 锁等动作。</li>
-<li>finalize 是基础类 java.lang.Object 的一个方法，它的设计目的是保证对象在被垃圾收集前完成特定资源的回收。finalize 机制现在已经不推荐使用，并且在 JDK 9 开始被标记为 deprecated。</li>
-</ul>
-<h1 id="进阶回答（从性能、并发、对象生命周期或垃圾收集基本过程等方面的理解）"><a href="#进阶回答（从性能、并发、对象生命周期或垃圾收集基本过程等方面的理解）" class="headerlink" title="进阶回答（从性能、并发、对象生命周期或垃圾收集基本过程等方面的理解）"></a>进阶回答（从性能、并发、对象生命周期或垃圾收集基本过程等方面的理解）</h1><h2 id="1-1-final"><a href="#1-1-final" class="headerlink" title="1.1 final"></a>1.1 final</h2><p>推荐使用 final 关键字来明确表示我们代码的语义、逻辑意图，这已经被证明在很多场景下是非常好的实践，比如：</p>
-<ul>
-<li>我们可以将方法或者类声明为 final，这样就可以明确告知别人，这些行为是不许修改的。</li>
-</ul>
-<blockquote>
-<p>如果你关注过 Java 核心类库的定义或源码， 有没有发现 java.lang 包下面的很多类，相当一部分都被声明成为 final class？在第三方类库的一些基础类中同样如此，这可以有效避免 API 使用者更改基础功能，某种程度上，这是保证平台安全的必要手段。</p>
-</blockquote>
-<ul>
-<li>使用 final 修饰参数或者变量，也可以清楚地避免意外赋值导致的编程错误，甚至，有人明确推荐将所有方法参数、本地变量、成员变量声明成 final。</li>
-<li>final 变量产生了某种程度的不可变（immutable）的效果，所以，可以用于保护只读数据，尤其是在并发编程中，因为明确地不能再赋值 final 变量，有利于减少额外的同步开销，也可以省去一些防御性拷贝的必要。</li>
-</ul>
-<p>final 也许会有性能的好处，很多文章或者书籍中都介绍了可在特定场景提高性能，比如：</p>
-<blockquote>
-<p>利用 final 可能有助于 JVM 将方法进行内联，</p>
-</blockquote>
-<blockquote>
-<p>可以改善编译器进行条件编译的能力等等。</p>
-</blockquote>
-<p>坦白说，很多类似的结论都是基于假设得出的，比如现代高性能 JVM（如 HotSpot）判断内联未必依赖 final 的提示，要相信 JVM 还是非常智能的。类似的，final 字段对性能的影响，大部分情况下，并没有考虑的必要。</p>
-<p>从开发实践的角度，无需过度强调这一点，这是和 JVM 的实现很相关的，未经验证比较难以把握。我的建议是，在日常开发中，除非有特别考虑，不然最好不要指望这种小技巧带来的所谓性能好处，<strong>程序最好是体现它的语义目的</strong>。如果你确实对这方面有兴趣，可以查阅相关资料，我就不再赘述了，不过千万别忘了验证一下。</p>
-<h3 id="1-1-1-注意：final-不是-immutable！"><a href="#1-1-1-注意：final-不是-immutable！" class="headerlink" title="1.1.1 注意：final 不是 immutable！"></a>1.1.1 注意：final 不是 immutable！</h3><p>需要注意的是，final 并不等同于 immutable，比如下面这段代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> List&lt;String&gt; strList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">strList.add(<span class="string">"Hello"</span>);</span><br><span class="line">strList.add(<span class="string">"world"</span>);  </span><br><span class="line"></span><br><span class="line">List&lt;String&gt; unmodifiableStrList = List.of(<span class="string">"hello"</span>, <span class="string">"world"</span>); <span class="comment">//不可变list</span></span><br><span class="line">unmodifiableStrList.add(<span class="string">"again"</span>);   <span class="comment">//会抛出运行时异常</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>final 只能约束 strList 这个引用不可以被赋值，但是 strList 对象行为不被 final 影响</strong>，添加元素等操作是完全正常的。如果我们真的希望对象本身是不可变的，那么需要相应的类支持不可变的行为。在上面这个例子中，List.of 方法创建的本身就是不可变 List，最后那句 add 是会在运行时抛出异常的。</p>
-<h3 id="1-1-2-immutable-的类"><a href="#1-1-2-immutable-的类" class="headerlink" title="1.1.2 immutable 的类"></a>1.1.2 immutable 的类</h3><p>Immutable 在很多场景是非常棒的选择，某种意义上说，Java 语言目前并没有原生的不可变支持，如果要实现 immutable 的类，我们需要做到：</p>
-<blockquote>
-<ol>
-<li>将 class 自身声明为 final，这样别人就不能扩展来绕过限制了。</li>
-<li>将所有成员变量定义为 private 和 final，并且不要实现 setter 方法。</li>
-<li><strong>通常构造对象时，成员变量使用深度拷贝来初始化，而不是直接赋值</strong>，这是一种防御措施，因为你无法确定输入对象不被其他人修改。</li>
-<li>如果确实需要实现 getter 方法，或者其他可能会返回内部状态的方法，使用 copy-on-write 原则，创建私有的 copy。</li>
-</ol>
-</blockquote>
-<p>这些原则是不是在并发编程实践中经常被提到？的确如此。</p>
-<p>关于 setter/getter 方法，很多人喜欢直接用 IDE 一次全部生成，建议最好是你确定有需要时再实现。</p>
-<h2 id="1-2-finallly"><a href="#1-2-finallly" class="headerlink" title="1.2 finallly"></a>1.2 finallly</h2><p>对于 finally，明确知道怎么使用就足够了。需要关闭的连接等资源，更推荐使用 Java 7 中添加的 try-with-resources 语句，因为通常 Java 平台能够更好地处理异常情况，编码量也要少很多，何乐而不为呢。</p>
-<p>下面代码会输出什么？</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  <span class="comment">// do something</span></span><br><span class="line">  System.exit(<span class="number">1</span>);</span><br><span class="line">&#125; <span class="keyword">finally</span>&#123;</span><br><span class="line">  System.out.println(“Print from <span class="keyword">finally</span>”);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>上面 finally 里面的代码可不会被执行的哦，这是一个特例。</p>
-<h2 id="1-3-finalize"><a href="#1-3-finalize" class="headerlink" title="1.3 finalize"></a>1.3 finalize</h2><p>对于 finalize，我们要明确它是不推荐使用的，业界实践一再证明它不是个好的办法，在 Java 9 中，甚至明确将 Object.finalize() 标记为 deprecated！如果没有特别的原因，不要实现 finalize 方法，也不要指望利用它来进行资源回收。</p>
-<p>为什么呢？简单说，你<strong>无法保证 finalize 什么时候执行，执行的是否符合预期。使用不当会影响性能，导致程序死锁、挂起等。</strong></p>
-<p>通常来说，利用上面的提到的 try-with-resources 或者 try-finally 机制，是非常好的回收资源的办法。如果确实需要额外处理，可以考虑 Java 提供的 Cleaner 机制或者其他替代方法。</p>
-<h3 id="1-3-1-finalize问题的具体分析"><a href="#1-3-1-finalize问题的具体分析" class="headerlink" title="1.3.1 finalize问题的具体分析"></a>1.3.1 finalize问题的具体分析</h3><p><strong>finalize 的执行是和垃圾收集关联在一起的</strong>，一旦实现了非空的 finalize 方法，就会导致相应对象回收呈现数量级上的变慢，有人专门做过 benchmark，大概是 40~50 倍的下降。</p>
-<p>因为，finalize 被设计成在对象<strong>被垃圾收集前</strong>调用，这就意味着实现了 finalize 方法的对象是个“特殊公民”，JVM 要对它进行额外处理。<u>finalize 本质上成为了快速回收的阻碍者，可能导致你的对象经过多个垃圾收集周期才能被回收。</u></p>
-<p>有人也许会问，我用 System.runFinalization() 告诉 JVM 积极一点，是不是就可以了？</p>
-<p>也许有点用，但是问题在于，这还是不可预测、不能保证的，所以本质上还是不能指望。实践中，因为 finalize 拖慢垃圾收集，导致大量对象堆积，也是一种典型的导致 <a href="https://www.cnblogs.com/thinkvenus/p/6805495.html" target="_blank" rel="noopener">OOM（Out Of Memory）</a> 的原因。</p>
-<p>从另一个角度，我们要确保回收资源就是因为资源都是有限的，垃圾收集时间的不可预测，可能会极大加剧资源占用。这意味着对于消耗非常高频的资源，千万不要指望 finalize 去承担资源释放的主要职责，最多让 finalize 作为最后的“守门员”，况且它已经暴露了如此多的问题。这也是为什么推荐：<strong>资源用完即显式释放，或者利用资源池来尽量重用。</strong></p>
-<p>finalize 还会掩盖资源回收时的出错信息，我们看下面一段 JDK 的源代码，截取自 java.lang.ref.Finalizer</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">runFinalizer</span><span class="params">(JavaLangAccess jla)</span> </span>&#123;</span><br><span class="line"> <span class="comment">//  ... 省略部分代码</span></span><br><span class="line"> <span class="keyword">try</span> &#123;</span><br><span class="line">    Object finalizee = <span class="keyword">this</span>.get(); </span><br><span class="line">    <span class="keyword">if</span> (finalizee != <span class="keyword">null</span> &amp;&amp; !(finalizee <span class="keyword">instanceof</span> java.lang.Enum)) &#123;</span><br><span class="line">       jla.invokeFinalize(finalizee);</span><br><span class="line">       <span class="comment">// Clear stack slot containing this variable, to decrease</span></span><br><span class="line">       <span class="comment">// the chances of false retention with a conservative GC</span></span><br><span class="line">       finalizee = <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (Throwable x) &#123; &#125;</span><br><span class="line">    <span class="keyword">super</span>.clear(); </span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
-
-<p>是的，你没有看错，这里的 Throwable 是被生吞了的！也就意味着一旦出现异常或者出错，你得不到任何有效信息。况且，Java 在 finalize 阶段也没有好的方式处理任何信息，不然更加不可预测。</p>
-<h3 id="1-3-2-有什么机制可以替换finalize吗？"><a href="#1-3-2-有什么机制可以替换finalize吗？" class="headerlink" title="1.3.2 有什么机制可以替换finalize吗？"></a>1.3.2 有什么机制可以替换finalize吗？</h3><p>Java 平台目前在逐步使用 java.lang.ref.Cleaner 来替换掉原有的 finalize 实现。Cleaner 的实现利用了<strong>幻象引用（PhantomReference）</strong>，这是一种常见的所谓 post-mortem 清理机制。利用幻象引用和引用队列，我们可以保证对象被彻底销毁前做一些类似资源回收的工作，比如关闭文件描述符（操作系统有限的资源），它比 finalize 更加轻量、更加可靠。</p>
-<p>吸取了 finalize 里的教训，每个 Cleaner 的操作都是独立的，它有自己的运行线程，所以可以避免意外死锁等问题。</p>
-<p>实践中，我们可以为自己的模块构建一个 Cleaner，然后实现相应的清理逻辑。下面是 JDK 自身提供的样例程序：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CleaningExample</span> <span class="keyword">implements</span> <span class="title">AutoCloseable</span> </span>&#123;</span><br><span class="line">        <span class="comment">// A cleaner, preferably one shared within a library</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Cleaner cleaner = &lt;cleaner&gt;;</span><br><span class="line">        <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">State</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123; </span><br><span class="line">            State(...) &#123;</span><br><span class="line">                <span class="comment">// initialize State needed for cleaning action</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="comment">// cleanup action accessing State, executed at most once</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> State;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> Cleaner.Cleanable cleanable</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">CleaningExample</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.state = <span class="keyword">new</span> State(...);</span><br><span class="line">            <span class="keyword">this</span>.cleanable = cleaner.register(<span class="keyword">this</span>, state);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            cleanable.clean();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-<p>注意，从可预测性的角度来判断，Cleaner 或者幻象引用改善的程度仍然是有限的，如果由于种种原因导致幻象引用堆积，同样会出现问题。所以，Cleaner 适合作为一种最后的保证手段，而不是完全依赖 Cleaner 进行资源回收，不然我们就要再做一遍 finalize 的噩梦了。</p>
-<p>我也注意到很多第三方库自己直接利用幻象引用定制资源收集，比如广泛使用的 MySQL JDBC driver 之一的 mysql-connector-j，就利用了幻象引用机制。幻象引用也可以进行类似链条式依赖关系的动作，比如，进行总量控制的场景，保证只有连接被关闭，相应资源被回收，连接池才能创建新的连接。</p>
-<p>另外，这种代码如果稍有不慎添加了对资源的强引用关系，就会导致循环引用关系，前面提到的 MySQL JDBC 就在特定模式下有这种问题，导致内存泄漏。上面的示例代码中，将 State 定义为 static，就是为了避免普通的内部类隐含着对外部对象的强引用，因为那样会使外部对象无法进入幻象可达的状态。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/java//" class="article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/11/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/3-0-%E8%B0%88%E8%B0%88final%E3%80%81finally%E3%80%81-finalize%E6%9C%89%E4%BB%80%E4%B9%88%E4%B8%8D%E5%90%8C%EF%BC%9F/">展开全文 >></a>
         </p>
       
 
@@ -1949,6 +1777,22 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">动态代理</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">数据结构与算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Trie树</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">原始数据类型</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">包装类</a>
               </li>
             
             <div class="clearfix"></div>

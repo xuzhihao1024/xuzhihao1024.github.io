@@ -6,18 +6,18 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>6 | 谈谈发射机制？动态代理是基于什么原理？ | xuzhihao的博客</title>
+  <title>6 | 谈谈反射机制？动态代理是基于什么原理？ | xuzhihao的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="[TOC] 1.编程语言的两个分类角度1.1 动态类型&amp;静态类型简单区分就是语言类型信息是在运行时检查，还是编译期检查。 1.2 强类型&amp;弱类型当不同类型变量赋值时，是否需要显式地（强制）进行类型转换。 通常认为，Java 是静态的强类型语言，但是因为提供了类似反射等机制，也具备了部分动态类型语言的能力。 2.反射机制反射机制是 Java 语言提供的一种基础功能，赋予程序在运行时自">
 <meta property="og:type" content="article">
-<meta property="og:title" content="6 | 谈谈发射机制？动态代理是基于什么原理？">
+<meta property="og:title" content="6 | 谈谈反射机制？动态代理是基于什么原理？">
 <meta property="og:url" content="http://yoursite.com/2020/02/14/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/6-%E8%B0%88%E8%B0%88%E5%8F%91%E5%B0%84%E6%9C%BA%E5%88%B6%EF%BC%9F%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E6%98%AF%E5%9F%BA%E4%BA%8E%E4%BB%80%E4%B9%88%E5%8E%9F%E7%90%86%EF%BC%9F/index.html">
 <meta property="og:site_name" content="xuzhihao的博客">
 <meta property="og:description" content="[TOC] 1.编程语言的两个分类角度1.1 动态类型&amp;静态类型简单区分就是语言类型信息是在运行时检查，还是编译期检查。 1.2 强类型&amp;弱类型当不同类型变量赋值时，是否需要显式地（强制）进行类型转换。 通常认为，Java 是静态的强类型语言，但是因为提供了类似反射等机制，也具备了部分动态类型语言的能力。 2.反射机制反射机制是 Java 语言提供的一种基础功能，赋予程序在运行时自">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://static001.geekbang.org/resource/image/ba/2b/ba9a5b6228b188f5b9b15017e29a302b.png">
 <meta property="article:published_time" content="2020-02-14T02:31:36.000Z">
-<meta property="article:modified_time" content="2020-02-16T06:24:25.814Z">
+<meta property="article:modified_time" content="2020-02-20T15:11:11.206Z">
 <meta property="article:author" content="Jason Xu">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="反射">
@@ -168,7 +168,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      6 | 谈谈发射机制？动态代理是基于什么原理？
+      6 | 谈谈反射机制？动态代理是基于什么原理？
     </h1>
   
 
@@ -389,7 +389,7 @@
   
 <nav id="article-nav">
   
-    <a href="/2020/02/14/leetcode/22-%E6%8B%AC%E5%8F%B7%E7%94%9F%E6%88%90/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2020/02/14/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/leetcode/22-%E6%8B%AC%E5%8F%B7%E7%94%9F%E6%88%90/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -600,6 +600,22 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">动态代理</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">数据结构与算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Trie树</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">原始数据类型</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">包装类</a>
               </li>
             
             <div class="clearfix"></div>

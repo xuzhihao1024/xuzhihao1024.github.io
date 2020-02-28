@@ -6,20 +6,29 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>leetcode刷题目录 | xuzhihao的博客</title>
+  <title>字典树（Trie）树 | xuzhihao的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="按照类型去刷题，每种类型从简单到难去做一遍 在LeetCode上通过标签筛选不一样的 答案看不懂就看解题视频，直接LeetCode+题号搜索 刷题目录 [https:&#x2F;&#x2F;github.com&#x2F;CyC2018&#x2F;CS-Notes&#x2F;blob&#x2F;master&#x2F;notes&#x2F;Leetcode%20%E9%A2%98%E8%A7%A3%20-%20%E7%9B%AE%E5%BD%95.md](https:&#x2F;&#x2F;gi">
+  <meta name="description" content="1. Trie 树的数据结构Trie树，即字典树，⼜称单词查找树或键树，是⼀种树形结构，是⼀种哈希树的变种。 典型应⽤是⽤于统计和排序⼤量的字符串（但不仅限于字符串），所以经常被搜索引擎系统⽤于⽂本词频统计。 如平衡树和哈希表，使我们能够在字符串数据集中搜索单词。为什么我们还需要 Trie 树呢？尽管哈希表可以在O(1)时间内寻找键值，却无法高效的完成以下操作：  找到具有同一前缀的全部键值。 按">
 <meta property="og:type" content="article">
-<meta property="og:title" content="leetcode刷题目录">
-<meta property="og:url" content="http://yoursite.com/2020/02/12/leetcode/leetcode%E5%88%B7%E9%A2%98%E7%9B%AE%E5%BD%95/index.html">
+<meta property="og:title" content="字典树（Trie）树">
+<meta property="og:url" content="http://yoursite.com/2020/02/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%88Trie%EF%BC%89%E6%A0%91/index.html">
 <meta property="og:site_name" content="xuzhihao的博客">
-<meta property="og:description" content="按照类型去刷题，每种类型从简单到难去做一遍 在LeetCode上通过标签筛选不一样的 答案看不懂就看解题视频，直接LeetCode+题号搜索 刷题目录 [https:&#x2F;&#x2F;github.com&#x2F;CyC2018&#x2F;CS-Notes&#x2F;blob&#x2F;master&#x2F;notes&#x2F;Leetcode%20%E9%A2%98%E8%A7%A3%20-%20%E7%9B%AE%E5%BD%95.md](https:&#x2F;&#x2F;gi">
+<meta property="og:description" content="1. Trie 树的数据结构Trie树，即字典树，⼜称单词查找树或键树，是⼀种树形结构，是⼀种哈希树的变种。 典型应⽤是⽤于统计和排序⼤量的字符串（但不仅限于字符串），所以经常被搜索引擎系统⽤于⽂本词频统计。 如平衡树和哈希表，使我们能够在字符串数据集中搜索单词。为什么我们还需要 Trie 树呢？尽管哈希表可以在O(1)时间内寻找键值，却无法高效的完成以下操作：  找到具有同一前缀的全部键值。 按">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2020-02-12T10:06:05.000Z">
-<meta property="article:modified_time" content="2020-02-12T10:09:10.061Z">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0082zybpgy1gc1gr88a9rj30yh0u07wh.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0082zybpgy1gc1gyji3qij31cq0u0ngi.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0082zybpgy1gc1k7t69s8j30dw0dwq71.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0082zybpgy1gc1gv7koepj31k10u0gqx.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0082zybpgy1gc1jgdw8gaj30ck0auq39.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0082zybpgy1gc1jgm7t9pg30p30fqaah.gif">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/0082zybpgy1gc1jgsmltxj304g04g0sr.jpg">
+<meta property="article:published_time" content="2020-02-19T01:36:12.000Z">
+<meta property="article:modified_time" content="2020-02-19T03:42:04.497Z">
 <meta property="article:author" content="Jason Xu">
-<meta property="article:tag" content="leetcode">
+<meta property="article:tag" content="数据结构与算法">
+<meta property="article:tag" content="Trie树">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/0082zybpgy1gc1gr88a9rj30yh0u07wh.jpg">
   
     <link rel="alternative" href="/atom.xml" title="xuzhihao的博客" type="application/atom+xml">
   
@@ -157,155 +166,64 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-leetcode/leetcode刷题目录" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-数据结构与算法/字典树（Trie）树" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      leetcode刷题目录
+      字典树（Trie）树
     </h1>
   
 
         
-        <a href="/2020/02/12/leetcode/leetcode%E5%88%B7%E9%A2%98%E7%9B%AE%E5%BD%95/" class="archive-article-date">
-  	<time datetime="2020-02-12T10:06:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-12</time>
+        <a href="/2020/02/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%88Trie%EF%BC%89%E6%A0%91/" class="archive-article-date">
+  	<time datetime="2020-02-19T01:36:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-19</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>按照类型去刷题，每种类型从简单到难去做一遍</p>
-<p>在LeetCode上通过标签筛选不一样的</p>
-<p>答案看不懂就看解题视频，直接LeetCode+题号搜索</p>
-<p>刷题目录 [<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode%20%E9%A2%98%E8%A7%A3%20-%20%E7%9B%AE%E5%BD%95.md]" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode%20%E9%A2%98%E8%A7%A3%20-%20%E7%9B%AE%E5%BD%95.md]</a>(<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 目录.md)</p>
-<p>栈和队列（0/6）</p>
-<p>[1. 用栈实现队列](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 栈和队列.md#1-用栈实现队列)</p>
-<p>[2. 用队列实现栈](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 栈和队列.md#2-用队列实现栈)</p>
-<p>[3. 最小值栈](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 栈和队列.md#3-最小值栈)</p>
-<p>[4. 用栈实现括号匹配](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 栈和队列.md#4-用栈实现括号匹配)</p>
-<p>[5. 数组中元素与下一个比它大的元素之间的距离](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 栈和队列.md#5-数组中元素与下一个比它大的元素之间的距离)</p>
-<p>[6. 循环数组中比当前元素大的下一个元素](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 栈和队列.md#6-循环数组中比当前元素大的下一个元素)</p>
-<p>数组与矩阵（0/12）</p>
-<p>[1. 把数组中的 0 移到末尾](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#1-把数组中的-0-移到末尾)</p>
-<p>[2. 改变矩阵维度](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#2-改变矩阵维度)</p>
-<p>[3. 找出数组中最长的连续 1](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#3-找出数组中最长的连续-1)</p>
-<p>[4. 有序矩阵查找](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#4-有序矩阵查找)</p>
-<p>[5. 有序矩阵的 Kth Element](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#5-有序矩阵的-kth-element)</p>
-<p>[6. 一个数组元素在 [1, n] 之间，其中一个数被替换为另一个数，找出重复的数和丢失的数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#6-一个数组元素在-[1,-n]-之间，其中一个数被替换为另一个数，找出重复的数和丢失的数)</p>
-<p>[7. 找出数组中重复的数，数组值在 [1, n] 之间](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#7-找出数组中重复的数，数组值在-[1,-n]-之间)</p>
-<p>[8. 数组相邻差值的个数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#8-数组相邻差值的个数)</p>
-<p>[9. 数组的度](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#9-数组的度)</p>
-<p>[10. 对角元素相等的矩阵](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#10-对角元素相等的矩阵)</p>
-<p>[11. 嵌套数组](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#11-嵌套数组)</p>
-<p>[12. 分隔数组](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 数组与矩阵.md#12-分隔数组)</p>
-<p>链表（5/10）</p>
-<p>[1. 找出两个链表的交点](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#1-找出两个链表的交点)</p>
-<p>[2. 链表反转](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#2-链表反转)</p>
-<p>[3. 归并两个有序的链表](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#3-归并两个有序的链表)</p>
-<p>[4. 从有序链表中删除重复节点](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#4-从有序链表中删除重复节点)(1.21)</p>
-<p>[5. 删除链表的倒数第 n 个节点](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#5-删除链表的倒数第-n-个节点)(1.22)</p>
-<p>[6. 交换链表中的相邻结点](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#6-交换链表中的相邻结点)</p>
-<p>[7. 链表求和](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#7-链表求和)</p>
-<p>[8. 回文链表](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#8-回文链表)</p>
-<p>[9. 分隔链表](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#9-分隔链表)</p>
-<p>[10. 链表元素按奇偶聚集](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 链表.md#10-链表元素按奇偶聚集)</p>
-<p>位运算（0/13）</p>
-<p>[1. 统计两个数的二进制表示有多少位不同](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#1-统计两个数的二进制表示有多少位不同)</p>
-<p>[2. 数组中唯一一个不重复的元素](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#2-数组中唯一一个不重复的元素)</p>
-<p>[3. 找出数组中缺失的那个数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#3-找出数组中缺失的那个数)</p>
-<p>[4. 数组中不重复的两个元素](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#4-数组中不重复的两个元素)</p>
-<p>[5. 翻转一个数的比特位](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#5-翻转一个数的比特位)</p>
-<p>[6. 不用额外变量交换两个整数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#6-不用额外变量交换两个整数)</p>
-<p>[7. 判断一个数是不是 2 的 n 次方](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#7-判断一个数是不是-2-的-n-次方)</p>
-<p>[8. 判断一个数是不是 4 的 n 次方](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#8–判断一个数是不是-4-的-n-次方)</p>
-<p>[9. 判断一个数的位级表示是否不会出现连续的 0 和 1](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#9-判断一个数的位级表示是否不会出现连续的-0-和-1)</p>
-<p>[10. 求一个数的补码](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#10-求一个数的补码)</p>
-<p>[11. 实现整数的加法](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#11-实现整数的加法)</p>
-<p>[12. 字符串数组最大乘积](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#12-字符串数组最大乘积)</p>
-<p>[13. 统计从 0 ~ n 每个数的二进制表示中 1 的个数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 位运算.md#13-统计从-0-~-n-每个数的二进制表示中-1-的个数)</p>
-<p>图（0/4）</p>
+        <h1 id="1-Trie-树的数据结构"><a href="#1-Trie-树的数据结构" class="headerlink" title="1. Trie 树的数据结构"></a>1. Trie 树的数据结构</h1><p>Trie树，即字典树，⼜称单词查找树或键树，是⼀种树形结构，是⼀种哈希树的变种。</p>
+<p>典型应⽤是⽤于统计和排序⼤量的字符串（但不仅限于字符串），所以经常被搜索引擎系统⽤于⽂本词频统计。</p>
+<p>如平衡树和哈希表，使我们能够在字符串数据集中搜索单词。为什么我们还需要 Trie 树呢？尽管哈希表可以在<em>O</em>(1)时间内寻找键值，却无法高效的完成以下操作：</p>
 <ul>
-<li><p>[二分图](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 图.md#二分图)</p>
-</li>
-<li><p>[1. 判断是否为二分图](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 图.md#1-判断是否为二分图)</p>
-</li>
-<li><p>[拓扑排序](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 图.md#拓扑排序)</p>
-</li>
-<li><p>[1. 课程安排的合法性](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 图.md#1-课程安排的合法性)</p>
-<p>[2. 课程安排的顺序](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 图.md#2-课程安排的顺序)</p>
-</li>
-<li><p>[并查集](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 图.md#并查集)</p>
-</li>
-<li><p>[1. 冗余连接](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 图.md#1-冗余连接)</p>
-</li>
+<li>找到具有同一前缀的全部键值。</li>
+<li>按词典序枚举字符串的数据集。</li>
 </ul>
-<p>树（0/31）</p>
+<p>Trie 树优于哈希表的另一个理由是，随着哈希表大小增加，会出现大量的冲突，时间复杂度可能增加到 O(n)，其中 n 是插入的键的数量。与哈希表相比，Trie 树在存储多个具有相同前缀的键时可以使用较少的空间。此时 Trie 树只需要 O(m) 的时间复杂度，其中 m 为键长。而在平衡树中查找键值需要 O(mlogn) 时间复杂度。</p>
+<p>字典树的优点是：最⼤限度地减少⽆谓的字符串⽐较，查询效率⽐哈希表⾼。</p>
+<img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc1gr88a9rj30yh0u07wh.jpg" alt="image-20200219094149853" style="zoom:50%;" />
+
+<h2 id="1-1-实际存储的结构"><a href="#1-1-实际存储的结构" class="headerlink" title="1.1 实际存储的结构"></a>1.1 实际存储的结构</h2><p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc1gyji3qij31cq0u0ngi.jpg" alt="image-20200219094854556"></p>
+<p>Trie 树是一个有根的树，其结点具有以下字段：</p>
 <ul>
-<li><p>[递归](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#递归)（0/14）</p>
-</li>
-<li><p>[1. 树的高度](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#1-树的高度)</p>
-<p>[2. 平衡树](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#2-平衡树)</p>
-<p>[3. 两节点的最长路径](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#3-两节点的最长路径)</p>
-<p>[4. 翻转树](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#4-翻转树)</p>
-<p>[5. 归并两棵树](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#5-归并两棵树)</p>
-<p>[6. 判断路径和是否等于一个数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#6-判断路径和是否等于一个数)</p>
-<p>[7. 统计路径和等于一个数的路径数量](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#7-统计路径和等于一个数的路径数量)</p>
-<p>[8. 子树](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#8-子树)</p>
-<p>[9. 树的对称](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#9-树的对称)</p>
-<p>[10. 最小路径](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#10-最小路径)</p>
-<p>[11. 统计左叶子节点的和](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#11-统计左叶子节点的和)</p>
-<p>[12. 相同节点值的最大路径长度](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#12-相同节点值的最大路径长度)</p>
-<p>[13. 间隔遍历](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#13-间隔遍历)</p>
-<p>[14. 找出二叉树中第二小的节点](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#14-找出二叉树中第二小的节点)</p>
-</li>
-<li><p>[层次遍历](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#层次遍历)（0/2）</p>
-</li>
-<li><p>[1. 一棵树每层节点的平均数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#1-一棵树每层节点的平均数)</p>
-<p>[2. 得到左下角的节点](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#2-得到左下角的节点)</p>
-</li>
-<li><p>[前中后序遍历](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#前中后序遍历)（0/3）</p>
-</li>
-<li><p>[1. 非递归实现二叉树的前序遍历](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#1-非递归实现二叉树的前序遍历)</p>
-<p>[2. 非递归实现二叉树的后序遍历](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#2-非递归实现二叉树的后序遍历)</p>
-<p>[3. 非递归实现二叉树的中序遍历](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#3-非递归实现二叉树的中序遍历)</p>
-</li>
-<li><p>[BST](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#bst)（0/10）</p>
-</li>
-<li><p>[1. 修剪二叉查找树](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#1-修剪二叉查找树)</p>
-<p>[2. 寻找二叉查找树的第 k 个元素](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#2-寻找二叉查找树的第-k-个元素)</p>
-<p>[3. 把二叉查找树每个节点的值都加上比它大的节点的值](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#3-把二叉查找树每个节点的值都加上比它大的节点的值)</p>
-<p>[4. 二叉查找树的最近公共祖先](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#4-二叉查找树的最近公共祖先)</p>
-<p>[5. 二叉树的最近公共祖先](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#5-二叉树的最近公共祖先)</p>
-<p>[6. 从有序数组中构造二叉查找树](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#6-从有序数组中构造二叉查找树)</p>
-<p>[7. 根据有序链表构造平衡的二叉查找树](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#7-根据有序链表构造平衡的二叉查找树)</p>
-<p>[8. 在二叉查找树中寻找两个节点，使它们的和为一个给定值](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#8-在二叉查找树中寻找两个节点，使它们的和为一个给定值)</p>
-<p>[9. 在二叉查找树中查找两个节点之差的最小绝对值](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#9-在二叉查找树中查找两个节点之差的最小绝对值)</p>
-<p>[10. 寻找二叉查找树中出现次数最多的值](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#10-寻找二叉查找树中出现次数最多的值)</p>
-</li>
-<li><p>[Trie](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#trie)（0/2）</p>
-</li>
-<li><p>[1. 实现一个 Trie](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#1-实现一个-trie)</p>
-<p>[2. 实现一个 Trie，用来求前缀和](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 树.md#2-实现一个-trie，用来求前缀和)</p>
-</li>
+<li>最多 R 个指向子结点的链接，其中每个链接对应字母表数据集中的一个字母。<br>本文中假定 R 为 26，小写拉丁字母的数量。</li>
+<li>布尔字段，以指定节点是对应键的结尾还是只是键前缀。</li>
 </ul>
-<p>字符串（0/9）</p>
-<p>[1. 字符串循环移位包含](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 字符串.md#1-字符串循环移位包含)</p>
-<p>[2. 字符串循环移位](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 字符串.md#2-字符串循环移位)</p>
-<p>[3. 字符串中单词的翻转](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 字符串.md#3-字符串中单词的翻转)</p>
-<p>[4. 两个字符串包含的字符是否完全相同](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 字符串.md#4-两个字符串包含的字符是否完全相同)</p>
-<p>[5. 计算一组字符集合可以组成的回文字符串的最大长度](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 字符串.md#5-计算一组字符集合可以组成的回文字符串的最大长度)</p>
-<p>[6. 字符串同构](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 字符串.md#6-字符串同构)</p>
-<p>[7. 回文子字符串个数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 字符串.md#7-回文子字符串个数)</p>
-<p>[8. 判断一个整数是否是回文数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 字符串.md#8-判断一个整数是否是回文数)</p>
-<p>[9. 统计二进制字符串中连续 1 和连续 0 数量相同的子字符串个数](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 字符串.md#9-统计二进制字符串中连续-1-和连续-0-数量相同的子字符串个数)</p>
-<p>哈希表（0/4）</p>
-<p>[1. 数组中两个数的和为给定值](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 哈希表.md#1-数组中两个数的和为给定值)</p>
-<p>[2. 判断数组是否含有重复元素](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 哈希表.md#2-判断数组是否含有重复元素)</p>
-<p>[3. 最长和谐序列](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 哈希表.md#3-最长和谐序列)</p>
-<p>[4. 最长连续序列](<a href="https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode" target="_blank" rel="noopener">https://github.com/CyC2018/CS-Notes/blob/master/notes/Leetcode</a> 题解 - 哈希表.md#4-最长连续序列)</p>
+<p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc1k7t69s8j30dw0dwq71.jpg" alt=""></p>
+<p><em>单词 “leet” 在 Trie 树中的表示</em></p>
+<h2 id="1-2-实际中的应用"><a href="#1-2-实际中的应用" class="headerlink" title="1.2 实际中的应用"></a>1.2 实际中的应用</h2><h3 id="自动补全"><a href="#自动补全" class="headerlink" title="自动补全"></a>自动补全</h3><p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc1gv7koepj31k10u0gqx.jpg" alt="image-20200219094541028"></p>
+<h3 id="拼写检查"><a href="#拼写检查" class="headerlink" title="拼写检查"></a>拼写检查</h3><p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc1jgdw8gaj30ck0auq39.jpg" alt=""></p>
+<h3 id="IP路由（最长前缀匹配）"><a href="#IP路由（最长前缀匹配）" class="headerlink" title="IP路由（最长前缀匹配）"></a>IP路由（最长前缀匹配）</h3><p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc1jgm7t9pg30p30fqaah.gif" alt=""></p>
+<h3 id="9宫格打字预测"><a href="#9宫格打字预测" class="headerlink" title="9宫格打字预测"></a>9宫格打字预测</h3><p><img src="https://tva1.sinaimg.cn/large/0082zybpgy1gc1jgsmltxj304g04g0sr.jpg" alt=""></p>
+<h1 id="2-Trie-树的核⼼思想"><a href="#2-Trie-树的核⼼思想" class="headerlink" title="2. Trie 树的核⼼思想"></a>2. Trie 树的核⼼思想</h1><p>Trie的核⼼思想是<strong>空间换时间</strong>。利⽤字符串的公共前缀来降低查询时间的开销以达到提⾼效率的⽬的。</p>
+<p>它并不是一个字符串存在一个节点上，而是用边来存这些字母的</p>
+<blockquote>
+<p>一个单词有多长，就是前面走过的边有几条 </p>
+</blockquote>
+<h1 id="3-Trie-树的基本性质"><a href="#3-Trie-树的基本性质" class="headerlink" title="3. Trie 树的基本性质"></a>3. Trie 树的基本性质</h1><ol>
+<li><p>根节点不包含字符，除根节点外每⼀个节点都只包含⼀个字符。</p>
+</li>
+<li><p>从根节点到某⼀节点，路径上经过的字符连接起来，为该节点对应的字符串。</p>
+</li>
+<li><p>每个节点的所有⼦节点包含的字符都不相同。</p>
+</li>
+</ol>
+<h1 id="4-leetcode题目"><a href="#4-leetcode题目" class="headerlink" title="4. leetcode题目"></a>4. leetcode题目</h1><p><a href="https://leetcode-cn.com/problems/implement-trie-prefix-tree/?utm_source=LCUS&utm_medium=ip_redirect_q_uns&utm_campaign=transfer2china" target="_blank" rel="noopener">208. 实现 Trie (前缀树)</a></p>
+<p><a href="https://leetcode-cn.com/problems/word-search-ii/" target="_blank" rel="noopener">212. 单词搜索 II</a></p>
 
       
 
@@ -340,7 +258,11 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">leetcode</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">数据结构与算法</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Trie树</a>
         		</li>
       		
 		</ul>
@@ -352,7 +274,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="/categories/leetcode//" class="article-tag-list-link color4">leetcode</a>
+        			<a href="/categories/数据结构与算法//" class="article-tag-list-link color3">数据结构与算法</a>
         		</li>
       		
 		</ul>
@@ -407,7 +329,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/02/12/leetcode/leetcode%E5%88%B7%E9%A2%98%E7%9B%AE%E5%BD%95/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/02/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%88Trie%EF%BC%89%E6%A0%91/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -421,18 +343,18 @@
   
 <nav id="article-nav">
   
-    <a href="/2020/02/13/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/4-%E5%BC%BA%E5%BC%95%E7%94%A8%E3%80%81%E8%BD%AF%E5%BC%95%E7%94%A8%E3%80%81%E5%BC%B1%E5%BC%95%E7%94%A8%E3%80%81%E5%B9%BB%E8%B1%A1%E5%BC%95%E7%94%A8%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2020/02/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/leetcode/208.%20%E5%AE%9E%E7%8E%B0%20Trie%20(%E5%89%8D%E7%BC%80%E6%A0%91)/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          4 | 强引用、软引用、弱引用、幻象引用有什么区别？
+          208.实现Trie（前缀树）
         
       </div>
     </a>
   
   
-    <a href="/2020/02/11/Java/java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E9%9D%A2%E8%AF%95/3-0-%E8%B0%88%E8%B0%88final%E3%80%81finally%E3%80%81-finalize%E6%9C%89%E4%BB%80%E4%B9%88%E4%B8%8D%E5%90%8C%EF%BC%9F/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">3.0 | 谈谈final、finally、 finalize有什么不同？</div>
+    <a href="/2020/02/18/Java/jvm/05-JVM%E6%98%AF%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8%E7%9A%84%EF%BC%9F%EF%BC%88%E4%B8%8B%EF%BC%89/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">05-JVM是如何执行方法调用的？（下）</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -459,7 +381,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    目录，不存在的…
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-Trie-树的数据结构"><span class="toc-number">1.</span> <span class="toc-text">1. Trie 树的数据结构</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-实际存储的结构"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 实际存储的结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-实际中的应用"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 实际中的应用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#自动补全"><span class="toc-number">1.2.1.</span> <span class="toc-text">自动补全</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#拼写检查"><span class="toc-number">1.2.2.</span> <span class="toc-text">拼写检查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#IP路由（最长前缀匹配）"><span class="toc-number">1.2.3.</span> <span class="toc-text">IP路由（最长前缀匹配）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9宫格打字预测"><span class="toc-number">1.2.4.</span> <span class="toc-text">9宫格打字预测</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-Trie-树的核⼼思想"><span class="toc-number">2.</span> <span class="toc-text">2. Trie 树的核⼼思想</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-Trie-树的基本性质"><span class="toc-number">3.</span> <span class="toc-text">3. Trie 树的基本性质</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-leetcode题目"><span class="toc-number">4.</span> <span class="toc-text">4. leetcode题目</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -632,6 +554,22 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">动态代理</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">数据结构与算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Trie树</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">原始数据类型</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">包装类</a>
               </li>
             
             <div class="clearfix"></div>
